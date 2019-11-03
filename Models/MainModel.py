@@ -1,12 +1,14 @@
 from tkinter import *
-import GUISettings
+from GUISettings import GUISettings
+from enum import Enum
 
 class MainModel():
     def __init__(self,):
         self.views = []
+        self.frames = dict()
 
         # set settings
-        self.settings = GUISettings.GUISettings()
+        self.settings = GUISettings
 
         # create main frame/canvas
         mainRoot = Tk()
@@ -24,12 +26,11 @@ class MainModel():
         # set start position and margin
         mainRoot.geometry('{}x{}+{}+{}'.format(self.settings.mainWidth, self.settings.mainHeight, centerX, centerY))
 
-        mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight)
+        mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight, bg=self.settings.mainBgColor)
 
         self.mainRoot = mainRoot
         self.bgRoot = bgRoot
         self.mainFrame = mainFrame
-        self.canvas = Canvas(mainFrame)
 
         return
 
@@ -50,7 +51,28 @@ class MainModel():
             return
 
         for view in self.views:
+            if view not in self.frames:
+                if(view.show is False):
+                    continue
+
+                frame = view.getCanvas(False)
+                frame.pack()
+
+                frame.place(x=view.offsetX, y=view.offsetY)
+
+                self.frames[view] = frame
+                print("add frame!")
+
             view.update()
+
+    def removeView(self, view):
+        if view is None or view not in self.views:
+            return
+
+        if self.frames[view] is not None:
+            frame = self.frames[view]
+
+        self.views.remove(view)
 
 class PageType(Enum):
     HOME = 0

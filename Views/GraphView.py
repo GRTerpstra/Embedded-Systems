@@ -1,4 +1,5 @@
 from Views.View import View
+from tkinter import *
 
 class GraphView(View):
     def __init__(self, mainModel, graphModel, redraw = True):
@@ -9,6 +10,8 @@ class GraphView(View):
         return
 
     def getScreen(self):
-        super().getScreen()
+        canvas = super().getScreen()
 
-        return
+        #canvas.create_rectangle(0, 0, 100, 100, fill='black')
+
+        return canvas
