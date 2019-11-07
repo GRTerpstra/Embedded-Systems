@@ -8,7 +8,7 @@ class MenuView(View):
         super().__init__(mainModel, redraw)
 
         self.offsetX = 0
-        self.offsetY = 8
+        self.offsetY = 0
 
         self.bgColor = GUISettings.menuBgColor
 
@@ -25,16 +25,30 @@ class MenuView(View):
         return
 
     def getScreen(self):
-        canvas = super().getScreen()
+        canvas = Canvas(self.mainModel.mainRoot, height=self.height, width=self.width, highlightthickness=0, bd=0)
 
-        canvas.create_rectangle(self.borderWidth, self.borderHeight, self.width - self.borderWidth*2, self.borderHeight+2, width=0, fill=GUISettings.menuShadowColor, outline=GUISettings.menuShadowColor)
-        canvas.create_rectangle(self.borderWidth, self.height - self.borderHeight - 2, self.width - self.borderWidth*2, self.height - self.borderHeight, width=0, fill=GUISettings.menuShadowColor, outline=GUISettings.menuShadowColor)
+        self.drawFrame(canvas, 0, 0, self.width, self.height, self.bgColor, self.borderColor, self.borderWidth,
+                       self.borderHeight, self.shadowColor, self.shadowWidth, self.shadowHeight)
 
         #create buttons
         if len(self.menuModel.pageTypes) > 0:
-            for name, title in self.menuModel.pageTypes.items():
-                button = Button(canvas, text = title, command = partial(self.menuModel.switchPage, name))
-                button.configure(activebackground = "#33B5E5", relief = FLAT)
-                window = canvas.create_window(10, 10, anchor=NW, window=button)
+            margin =  0
+            index = 0
+
+            navbar = Canvas(canvas, width=500, height=50)
+
+            # create buttons
+            if len(self.menuModel.pageTypes) > 0:
+                index = 0
+
+                for name, title in self.menuModel.pageTypes.items():
+                    button = Button(navbar, text=title, command=partial(self.menuModel.switchPage, name), height=2)
+                    button.configure(background=GUISettings.menuBgColor, activebackground="#33B5E5", relief=FLAT)
+                    button.grid(column=index, row=0)
+                    margin += button.winfo_width()
+                    print(button.winfo_width())
+                    index += 1
+
+            navbar.pack(fill="both", expand=1)
 
         return canvas

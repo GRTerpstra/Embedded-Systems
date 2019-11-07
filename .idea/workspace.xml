@@ -21,15 +21,15 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controller" />
+      <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controllers" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Views" />
       <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Models" />
       <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controllers" />
       <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controller" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controller" />
-      <recent name="C:\Users\Witwerts\PycharmProjects\gui1\Controllers" />
     </key>
   </component>
   <component name="RunDashboard">

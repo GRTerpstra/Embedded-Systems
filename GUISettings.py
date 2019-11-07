@@ -1,5 +1,4 @@
-from Models.MenuModel import PageType
-from enum import Enum
+from tkinter.font import Font
 
 class GUISettings:
     mainWidth = 1000
@@ -14,3 +13,12 @@ class GUISettings:
     menuBorderWidth = 1
     menuBorderHeight = 1
     menuShadowColor = "#575c65"
+    closeWidth = 22
+    closeHeight = 22
+    closeBorderWidth = 1
+    closeBorderHeight = 1
+    closeBorderColor = "black"
+    closeShadowWidth = 1
+    closeShadowHeight = 1
+    closeShadowColor = "#ff6464"
+    closeColor = "#FF0000"

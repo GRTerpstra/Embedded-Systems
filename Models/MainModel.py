@@ -1,11 +1,13 @@
 from tkinter import *
 from GUISettings import GUISettings
 from enum import Enum
+import serial
 
 class MainModel():
     def __init__(self,):
         self.views = []
         self.frames = dict()
+        self.conn = NONE
 
         # set settings
         self.settings = GUISettings
@@ -13,30 +15,56 @@ class MainModel():
         # create main frame/canvas
         mainRoot = Tk()
         mainRoot.overrideredirect(True)
+        mainRoot.attributes('-topmost', True)
 
         bgRoot = Toplevel(mainRoot)
         bgRoot.wm_attributes('-alpha', 0.3)
         bgRoot.wm_attributes("-fullscreen", True)
         bgRoot.overrideredirect(True)
+        bgRoot.attributes('-topmost', False)
+
+        backRoot = Toplevel(mainRoot)
+        backRoot.overrideredirect(True)
+        backRoot.attributes('-topmost', True)
+
+        #store screen width
+        self.screenWidth = mainRoot.winfo_screenwidth()
+        self.screenHeight = mainRoot.winfo_screenheight()
 
         # Gets both half the screen width/height and window width/height
-        centerX = int(mainRoot.winfo_screenwidth() / 2 - self.settings.mainWidth / 2)
-        centerY = int(mainRoot.winfo_screenheight() / 2 - self.settings.mainHeight / 2)
+        centerX = int(self.screenWidth / 2 - self.settings.mainWidth / 2)
+        centerY = int(self.screenHeight / 2 - self.settings.mainHeight / 2)
 
         # set start position and margin
         mainRoot.geometry('{}x{}+{}+{}'.format(self.settings.mainWidth, self.settings.mainHeight, centerX, centerY))
+        backRoot.geometry('{}x{}+{}+{}'.format(self.settings.closeWidth, self.settings.closeHeight, centerX + self.settings.mainWidth - int(self.settings.closeWidth / 2), centerY - int(self.settings.closeHeight / 2)))
 
         mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight, bg=self.settings.mainBgColor)
+        closeFrame = Frame(backRoot, width=self.settings.closeWidth, height=self.settings.closeHeight)
 
         self.mainRoot = mainRoot
         self.bgRoot = bgRoot
+        self.backRoot = closeFrame
+        self.closeFrame = closeFrame
         self.mainFrame = mainFrame
 
         return
 
     def start(self):
+        #show frames
         self.mainFrame.pack()
+        self.closeFrame.pack()
+
         self.mainRoot.mainloop()
+
+        # start connection
+        self.conn = serial.Serial('COM3', 19200)
+
+        while (1):
+            val = input()
+            self.conn.write(val.encode("ascii"))
+            print(val)
+            print(val.encode("ascii"))
 
         return
 
@@ -73,6 +101,11 @@ class MainModel():
             frame = self.frames[view]
 
         self.views.remove(view)
+
+    def close(self):
+        self.mainRoot.destroy()
+
+        return
 
 class PageType(Enum):
     HOME = 0
