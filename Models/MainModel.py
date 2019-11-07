@@ -2,6 +2,7 @@ from tkinter import *
 from GUISettings import GUISettings
 from enum import Enum
 import serial
+import time
 
 class MainModel():
     def __init__(self,):
@@ -60,11 +61,21 @@ class MainModel():
         # start connection
         self.conn = serial.Serial('COM3', 19200)
 
+        self.test = False
+
         while (1):
-            val = input()
-            self.conn.write(val.encode("ascii"))
-            print(val)
-            print(val.encode("ascii"))
+            if (self.conn.inWaiting() > 0):
+                data = self.conn.read(self.conn.inWaiting()).decode('ascii')
+                print(data)
+
+            if self.test is True:
+                 self.conn.write('1'.encode("ascii"))
+                 self.test = False
+            else:
+                self.conn.write('0'.encode("ascii"))
+                self.test = True
+
+            time.sleep(0.1)
 
         return
 
