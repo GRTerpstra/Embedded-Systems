@@ -22,7 +22,7 @@ class GUI:
         self.closeView = CloseView.CloseView(self.mainModel, False)
 
         self.mainModel.updateViews()
-        self.mainModel.start()
+        self.mainController.start()
 
     def close(self):
         self.bgRoot.destroy()

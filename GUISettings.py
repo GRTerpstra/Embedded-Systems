@@ -1,4 +1,6 @@
 from tkinter.font import Font
+from Controllers.MainController import SensorType
+from SensorSetting import SensorSetting
 
 class GUISettings:
     mainWidth = 1000
@@ -22,3 +24,11 @@ class GUISettings:
     closeShadowHeight = 1
     closeShadowColor = "#ff6464"
     closeColor = "#FF0000"
+    updateTime = 1000
+    connPort = 9600
+
+    sensorSettings = {
+        SensorType.DISTANCE: SensorSetting(SensorType.DISTANCE, 0, 255, 50),
+        SensorType.LIGHT: SensorSetting(SensorType.DISTANCE, 0, 255, 30),
+        SensorType.TEMPERATURE: SensorSetting(SensorType.DISTANCE, 0, 255, 40),
+    }

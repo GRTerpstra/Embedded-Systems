@@ -17,7 +17,6 @@ class MenuModel:
         return
 
 class PageType(Enum):
-    HOME = "HOME"
     LIGHT = "LIGHT SENSOR"
     TEMPERATURE = "TEMPERATURE SENSOR"
 

@@ -1,16 +1,13 @@
 from tkinter import *
-from GUISettings import GUISettings
 from enum import Enum
+from GUISettings import GUISettings
 import serial
 import time
 
 class MainModel():
-    def __init__(self,):
+    def __init__(self):
         self.views = []
         self.frames = dict()
-        self.conn = NONE
-
-        # set settings
         self.settings = GUISettings
 
         # create main frame/canvas
@@ -56,26 +53,29 @@ class MainModel():
         self.mainFrame.pack()
         self.closeFrame.pack()
 
+        # show frame
+        self.mainRoot.after(10, self.update)
         self.mainRoot.mainloop()
 
-        # start connection
-        self.conn = serial.Serial('COM3', 19200)
+    def update(self):
+        self.updateViews()
+        self.mainRoot.after(self.settings.updateTime, self.update)
 
-        self.test = False
+        #self.conn.write(str(0).encode())
 
-        while (1):
-            if (self.conn.inWaiting() > 0):
-                data = self.conn.read(self.conn.inWaiting()).decode('ascii')
-                print(data)
+        #inf = ""
+        #data = self.conn.readline()
 
-            if self.test is True:
-                 self.conn.write('1'.encode("ascii"))
-                 self.test = False
-            else:
-                self.conn.write('0'.encode("ascii"))
-                self.test = True
+        #for char in data:
+            # char = char.decode('ascii')
+            #print('char: ' + str(chr(char)))
 
-            time.sleep(0.1)
+            #inf += str(char)
+
+        #print("The Arduino says:")
+        #print(inf)
+
+        #self.test = ((self.test + 1) % 2)
 
         return
 
@@ -100,7 +100,6 @@ class MainModel():
                 frame.place(x=view.offsetX, y=view.offsetY)
 
                 self.frames[view] = frame
-                print("add frame!")
 
             view.update()
 
