@@ -15,6 +15,7 @@ class MainModel():
         self.currPage = PageType.LIGHT
         self.settings = GUISettings
         self.data = dict()
+        self.testCounter = 0;
 
         self.sensorTypes = [SensorType.DISTANCE, SensorType.LIGHT, SensorType.TEMPERATURE]
         self.switchTypes = [SensorType.LIGHT, SensorType.TEMPERATURE]
@@ -220,10 +221,23 @@ class MainModel():
         data = None
 
         if (self.conn.inWaiting() > 0):
-            data = self.conn.read().decode('ascii')
-
+            data = self.conn.readline().decode('ascii')
             self.conn.flushInput()
-            print(data)
+
+            dataLength = len(data)
+
+            if(data[dataLength-3] == "}" and data[0] == "{"):
+                counter = 1
+                dataString = ""
+                for letter in data:
+                    if(counter <= dataLength-2):
+                        dataString += letter
+                    counter+=1
+                data = dataString
+                print(data)
+            else:
+                print("Datalengte: " + str(dataLength))
+                print("FOUT: " + str(data[dataLength-3]) + "|" + str(data[0]))
 
         return data
 

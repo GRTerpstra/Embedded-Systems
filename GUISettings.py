@@ -35,7 +35,7 @@ class GUISettings:
     closeShadowHeight = 1
     closeShadowColor = "#ff6464"
     closeColor = "#FF0000"
-    updateTime = 10000
+    updateTime = 1000
     connPort = 9600
 
     sensorSettings = {
