@@ -14,28 +14,27 @@
 
 void temperature()
 {
-	USART_putstring(" Temperature : ");
 	analog_value = read_analog(0);
 	analog_value = (((((double)analog_value / 1024) * 5) - 0.5) * 100);		 // Calculate temperature
 	itoa(analog_value, temperature_sensor, 10);								//  Convert the read value to an ascii string
-	USART_putstring(temperature_sensor);								   //   Send the converted value to the terminal
-	USART_putstring("  ");
+	USART_putstring("t:");
+	USART_putstring(temperature_sensor);
+	USART_putstring("  ");								   //   Send the converted value to the terminal
 }
 
 void light()
 {
-	USART_putstring(" Light : ");
 	analog_value = read_analog(1);
 	analog_value = ((((double)analog_value)/1024)*100 *1.5);			  // Calculate the amount of light
 	itoa(analog_value, light_sensor, 10);							  // Convert the read value to an ascii string
-	USART_putstring(light_sensor);								  // Send the converted value to the terminal
-	
+	USART_putstring("l:");
+	USART_putstring(light_sensor);							// Send value to the terminal
+	USART_putstring("  ");
 }
 
 void distance()
 {
 	OCR1A = 0x640;								
-	USART_putstring(" Distance : ");
 	PORTD |= (1<< PD7);
 	_delay_us(10);
 	PORTD &= ~(1 << PD7);							// Give pulse from 10us
@@ -47,8 +46,10 @@ void distance()
 	float distance = ((float)count / 4);		// Calculate the distance
 
 	itoa(distance, distance_sensor, 10);        // Convert the read value to an ascii string
-	USART_putstring(distance_sensor);			// Send the converted value to the terminal
+	USART_putstring("d:");
+	USART_putstring(distance_sensor);
 	USART_putstring("  ");
+
 }
 
 void distanceStill()
