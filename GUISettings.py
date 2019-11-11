@@ -39,7 +39,7 @@ class GUISettings:
     connPort = 9600
 
     sensorSettings = {
-        "DISTANCE": SensorSetting(SensorType.DISTANCE, 0, 100, 50),
-        "LIGHT": SensorSetting(SensorType.DISTANCE, 0, 100, 30),
-        "TEMPERATURE": SensorSetting(SensorType.DISTANCE, 0, 120, 40)
+        str(SensorType.DISTANCE): SensorSetting(SensorType.DISTANCE, 0, 100, 50),
+        str(SensorType.LIGHT): SensorSetting(SensorType.LIGHT, 0, 100, 30),
+        str(SensorType.TEMPERATURE): SensorSetting(SensorType.TEMPERATURE, 0, 120, 40)
     }
