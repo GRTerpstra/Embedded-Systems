@@ -3,7 +3,6 @@ from enum import Enum
 class MenuModel:
     def __init__(self, mainModel):
         self.mainModel = mainModel
-        self.currPage = PageType.LIGHT
         self.pageTypes = dict()
 
         for page in PageType:
@@ -12,7 +11,8 @@ class MenuModel:
         return
 
     def switchPage(self, type):
-        print("switch page: " + type)
+        self.mainModel.currPage = type
+        self.mainModel.updateViews()
 
         return
 
