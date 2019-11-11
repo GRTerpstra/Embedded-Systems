@@ -1,10 +1,12 @@
 from tkinter import *
 from enum import Enum
 from GUISettings import GUISettings
+from Controllers.MainController import SensorType
 from Views import GraphView
 import random
 import serial
 import time
+
 
 class MainModel():
     def __init__(self):
@@ -13,6 +15,17 @@ class MainModel():
         self.currPage = PageType.LIGHT
         self.settings = GUISettings
         self.data = dict()
+
+        self.sensorTypes = [SensorType.DISTANCE, SensorType.LIGHT, SensorType.TEMPERATURE]
+        self.switchTypes = [SensorType.LIGHT, SensorType.TEMPERATURE]
+        self.sensorData = dict()
+        self.sensorSettings = []
+
+        self.conn = None
+        self.manual = False
+        self.running = False
+        self.currType = None
+        self.runTime = 0
 
         # create main frame/canvas
         mainRoot = Tk()
@@ -29,7 +42,7 @@ class MainModel():
         backRoot.overrideredirect(True)
         backRoot.attributes('-topmost', True)
 
-        #store screen width
+        # store screen width
         self.screenWidth = mainRoot.winfo_screenwidth()
         self.screenHeight = mainRoot.winfo_screenheight()
 
@@ -39,9 +52,12 @@ class MainModel():
 
         # set start position and margin
         mainRoot.geometry('{}x{}+{}+{}'.format(self.settings.mainWidth, self.settings.mainHeight, centerX, centerY))
-        backRoot.geometry('{}x{}+{}+{}'.format(self.settings.closeWidth, self.settings.closeHeight, centerX + self.settings.mainWidth - int(self.settings.closeWidth / 2), centerY - int(self.settings.closeHeight / 2)))
+        backRoot.geometry('{}x{}+{}+{}'.format(self.settings.closeWidth, self.settings.closeHeight,
+                                               centerX + self.settings.mainWidth - int(self.settings.closeWidth / 2),
+                                               centerY - int(self.settings.closeHeight / 2)))
 
-        mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight, bg=self.settings.mainBgColor)
+        mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight,
+                          bg=self.settings.mainBgColor)
         closeFrame = Frame(backRoot, width=self.settings.closeWidth, height=self.settings.closeHeight)
 
         self.mainRoot = mainRoot
@@ -50,12 +66,12 @@ class MainModel():
         self.closeFrame = closeFrame
         self.mainFrame = mainFrame
 
-        self.runTime = 0
+        self.reset()
 
         return
 
     def start(self):
-        #show frames
+        # show frames
         self.mainFrame.pack()
         self.closeFrame.pack()
 
@@ -63,7 +79,20 @@ class MainModel():
         self.mainRoot.after(10, self.update)
         self.mainRoot.mainloop()
 
-        self.runTime = 0
+        self.running = True
+
+    def stop(self):
+        self.running = False
+
+    def switch(self, type):
+        if type is None or type not in self.switchTypes:
+            return
+
+        self.currType = type
+
+        #update settings of current sensor and distance sensor
+        self.updateType(self.currType)
+        self.updateType(SensorType.DISTANCE)
 
     def update(self):
         self.updateViews(False)
@@ -76,21 +105,26 @@ class MainModel():
 
         self.runTime += self.settings.updateTime
 
-        #self.conn.write(str(0).encode())
+        self.updateData(self.currType)
+        self.updateData(SensorType.DISTANCE)
 
-        #inf = ""
-        #data = self.conn.readline()
+        self.read(self.currType)
 
-        #for char in data:
-            # char = char.decode('ascii')
-            #print('char: ' + str(chr(char)))
+        # self.conn.write(str(0).encode())
 
-            #inf += str(char)
+        # inf = ""
+        # data = self.conn.readline()
 
-        #print("The Arduino says:")
-        #print(inf)
+        # for char in data:
+        # char = char.decode('ascii')
+        # print('char: ' + str(chr(char)))
 
-        #self.test = ((self.test + 1) % 2)
+        # inf += str(char)
+
+        # print("The Arduino says:")
+        # print(inf)
+
+        # self.test = ((self.test + 1) % 2)
 
         return
 
@@ -107,7 +141,7 @@ class MainModel():
         view = self.views[type]
         view.updateNeeded = True
 
-    def updateViews(self, override = TRUE):
+    def updateViews(self, override=TRUE):
         if len(self.views) == 0:
             return
 
@@ -115,7 +149,7 @@ class MainModel():
             view = self.views[type]
 
             if view not in self.frames:
-                if(view.show is False):
+                if (view.show is False):
                     continue
 
             if override or view.updateNeeded:
@@ -156,6 +190,68 @@ class MainModel():
             return []
 
         return self.data[type]
+
+    def reset(self):
+        if self.conn is not None:
+            self.conn.close()
+
+        self.conn = serial.Serial('COM3', 19200)
+        self.sensorData = dict()
+
+        # reset sensor settings:
+        self.sensorSettings = GUISettings.sensorSettings
+
+        for type in self.sensorSettings:
+            setting = self.sensorSettings[type]
+            self.updateType(type, setting.currValue)
+
+    def write(self, byte):
+        if self.conn == None:
+            return
+
+        self.conn.write(byte.encode('ascii'))
+
+        pass
+
+    def read(self, type):
+        if self.conn == None:
+            return None
+
+        data = None
+
+        if (self.conn.inWaiting() > 0):
+            data = self.conn.read().decode('ascii')
+
+            self.conn.flushInput()
+            print(data)
+
+        return data
+
+    def getSensorData(self, type):
+        if type is None or type not in self.sensorData.keys():
+            return 0
+
+        return self.sensorData[type]
+
+    # updates the data of the sensor, based on the selected type
+    def updateData(self, sensorType):
+        if self.running is not True or sensorType is None:
+            return
+
+        data = self.read(sensorType)
+        self.sensorData[sensorType] = data
+
+    def updateType(self, type, data):
+        if self.running is not True or type is None or type not in self.sensorSettings:
+            return
+
+        setting = self.sensorSettings[type]
+        setting.currValue = data
+
+        self.write(str(data))
+
+        pass
+
 
 class PageType(Enum):
     HOME = 0

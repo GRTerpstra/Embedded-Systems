@@ -1,7 +1,7 @@
 from tkinter.font import Font
-from Controllers.MainController import SensorType
 from SensorSetting import SensorSetting
 from Models.MenuModel import PageType
+from Controllers.MainController import SensorType
 
 class GUISettings:
     mainWidth = 1000
@@ -35,7 +35,7 @@ class GUISettings:
     closeShadowHeight = 1
     closeShadowColor = "#ff6464"
     closeColor = "#FF0000"
-    updateTime = 1000
+    updateTime = 10000
     connPort = 9600
 
     sensorSettings = {
