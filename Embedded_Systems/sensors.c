@@ -38,7 +38,6 @@ void distance()
 	PORTD |= (1<< PD7);
 	_delay_us(10);
 	PORTD &= ~(1 << PD7);							// Give pulse from 10us
-	
 	loop_until_bit_is_set(PIND, PD6);
 	TCNT1 = 0;
 	loop_until_bit_is_clear(PIND, PD6);
