@@ -16,11 +16,11 @@ char *values[] = {"0","0","0"};
 
 void putString(){
 	
-	USART_putstring("{t:");
+	USART_putstring("{\"t\":");
 	USART_putstring(values[0]);
-	USART_putstring(",l:");
+	USART_putstring(",\"l\":");
 	USART_putstring(values[1]);
-	USART_putstring(",d:");
+	USART_putstring(",\"d\":");
 	USART_putstring(values[2]);
 	USART_putstring("}");
 	
