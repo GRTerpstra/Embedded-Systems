@@ -1,14 +1,18 @@
 from tkinter import *
 from enum import Enum
 from GUISettings import GUISettings
+from Views import GraphView
+import random
 import serial
 import time
 
 class MainModel():
     def __init__(self):
-        self.views = []
+        self.views = dict()
         self.frames = dict()
+        self.currPage = PageType.LIGHT
         self.settings = GUISettings
+        self.data = dict()
 
         # create main frame/canvas
         mainRoot = Tk()
@@ -58,8 +62,11 @@ class MainModel():
         self.mainRoot.mainloop()
 
     def update(self):
-        self.updateViews()
+        self.updateViews(False)
+        self.updateView(GraphView.GraphView)
         self.mainRoot.after(self.settings.updateTime, self.update)
+
+        self.addData(self.currPage, random.randint(0, 100))
 
         #self.conn.write(str(0).encode())
 
@@ -80,20 +87,30 @@ class MainModel():
         return
 
     def addView(self, view):
-        if view is None or view in self.views:
+        if view is None or type(view) in self.views:
             return
 
-        self.views.append(view)
+        self.views[type(view)] = view
 
-    def updateViews(self):
+    def updateView(self, type):
+        if len(self.views) == 0 or type not in self.views.keys():
+            return
+
+        view = self.views[type]
+        view.updateNeeded = True
+
+    def updateViews(self, override = TRUE):
         if len(self.views) == 0:
             return
 
-        for view in self.views:
+        for type in self.views.keys():
+            view = self.views[type]
+
             if view not in self.frames:
                 if(view.show is False):
                     continue
 
+            if override or view.updateNeeded:
                 frame = view.getCanvas(False)
                 frame.pack()
 
@@ -101,7 +118,7 @@ class MainModel():
 
                 self.frames[view] = frame
 
-            view.update()
+                view.update()
 
     def removeView(self, view):
         if view is None or view not in self.views:
@@ -116,6 +133,21 @@ class MainModel():
         self.mainRoot.destroy()
 
         return
+
+    def addData(self, type, data):
+        if type is None:
+            return
+
+        if type in self.data.keys():
+            self.data[type].append(data)
+        else:
+            self.data[type] = [data]
+
+    def getData(self, type):
+        if type is None or type not in self.data.keys():
+            return []
+
+        return self.data[type]
 
 class PageType(Enum):
     HOME = 0

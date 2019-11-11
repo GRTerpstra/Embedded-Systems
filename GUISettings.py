@@ -15,6 +15,16 @@ class GUISettings:
     menuBorderWidth = 1
     menuBorderHeight = 1
     menuShadowColor = "#575c65"
+    graphBgColor = "#282a30"
+    graphBorderColor = "black"
+    graphTextColor = "white"
+    graphLineColor = "black"
+    graphLineOffsetX = 6
+    graphLineOffsetY = 6
+    graphMarginX = 0
+    graphMarginY = 10
+    graphBarWidth = 42
+    graphBarHeight = 42
     closeWidth = 22
     closeHeight = 22
     closeBorderWidth = 1
@@ -30,5 +40,5 @@ class GUISettings:
     sensorSettings = {
         SensorType.DISTANCE: SensorSetting(SensorType.DISTANCE, 0, 255, 50),
         SensorType.LIGHT: SensorSetting(SensorType.DISTANCE, 0, 255, 30),
-        SensorType.TEMPERATURE: SensorSetting(SensorType.DISTANCE, 0, 255, 40),
+        SensorType.TEMPERATURE: SensorSetting(SensorType.DISTANCE, 0, 255, 40)
     }

@@ -46,7 +46,6 @@ class MenuView(View):
                     button.configure(background=GUISettings.menuBgColor, activebackground="#33B5E5", relief=FLAT)
                     button.grid(column=index, row=0)
                     margin += button.winfo_width()
-                    print(button.winfo_width())
                     index += 1
 
             navbar.pack(fill="both", expand=1)

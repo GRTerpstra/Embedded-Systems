@@ -13,4 +13,6 @@ class PageView(View):
 
         #canvas.create_rectangle(0, 0, 100, 100, fill='yellow')
 
+        self.canvas = canvas
+
         return canvas
