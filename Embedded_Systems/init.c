@@ -37,10 +37,10 @@ void init_USART()
 void init_ttc_scheduler()
 {
 	SCH_Init_T1();					//Set up scheduler
-	SCH_Add_Task(temperature,1,50); //Add 'temperature' task
-	SCH_Add_Task(light,2,50);		//Add 'light' task
-	SCH_Add_Task(distance,3,50);	//Add 'distance' task
-	SCH_Add_Task(nextLine,4,50);	//Add 'nextline' task
+	SCH_Add_Task(temperature,1,100); //Add 'temperature' task
+	SCH_Add_Task(light,2,100);		//Add 'light' task
+	SCH_Add_Task(distance,3,100);	//Add 'distance' task
+	SCH_Add_Task(putString,4,50);	//Add 'putString' task
 	SCH_Add_Task(upDownAwning,0,25);//Add 'updown' task
 	SCH_Start();					//Start running the scheduler 
 }

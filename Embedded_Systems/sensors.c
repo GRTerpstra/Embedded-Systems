@@ -12,34 +12,43 @@
 #include "sensors.h"
 #include "serial.h"
 
+char *values[] = {"0","0","0"};
+
+void putString(){
+	
+	USART_putstring("{t:");
+	USART_putstring(values[0]);
+	USART_putstring(",l:");
+	USART_putstring(values[1]);
+	USART_putstring(",d:");
+	USART_putstring(values[2]);
+	USART_putstring("}");
+	
+	nextLine();
+}
+
 void temperature()
 {
-	USART_putstring(" Temperature : ");
 	analog_value = read_analog(0);
 	analog_value = (((((double)analog_value / 1024) * 5) - 0.5) * 100);		 // Calculate temperature
 	itoa(analog_value, temperature_sensor, 10);								//  Convert the read value to an ascii string
-	USART_putstring(temperature_sensor);								   //   Send the converted value to the terminal
-	USART_putstring("  ");
+	values[0] = temperature_sensor;
 }
 
 void light()
 {
-	USART_putstring(" Light : ");
 	analog_value = read_analog(1);
 	analog_value = ((((double)analog_value)/1024)*100 *1.5);			  // Calculate the amount of light
 	itoa(analog_value, light_sensor, 10);							  // Convert the read value to an ascii string
-	USART_putstring(light_sensor);								  // Send the converted value to the terminal
-	
+	values[1] = light_sensor;											// Send value to the terminal
 }
 
 void distance()
 {
 	OCR1A = 0x640;								
-	USART_putstring(" Distance : ");
 	PORTD |= (1<< PD7);
 	_delay_us(10);
-	PORTD &= ~(1 << PD7);							// Give pulse from 10us
-	
+	PORTD &= ~(1 << PD7);							// Give pulse from 10us]]200000000000
 	loop_until_bit_is_set(PIND, PD6);
 	TCNT1 = 0;
 	loop_until_bit_is_clear(PIND, PD6);
@@ -47,8 +56,8 @@ void distance()
 	float distance = ((float)count / 4);		// Calculate the distance
 
 	itoa(distance, distance_sensor, 10);        // Convert the read value to an ascii string
-	USART_putstring(distance_sensor);			// Send the converted value to the terminal
-	USART_putstring("  ");
+	values[2] = distance_sensor;
+
 }
 
 void distanceStill()

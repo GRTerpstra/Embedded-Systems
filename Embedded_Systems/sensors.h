@@ -9,6 +9,9 @@
 #ifndef SENSORS_H_
 #define SENSORS_H_
 
+//Send function
+void putString();
+
 // Sensors
 void temperature();						
 void light();								

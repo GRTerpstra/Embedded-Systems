@@ -11,6 +11,10 @@
 #define F_CPU 16000000UL
 #include <util/delay.h>
 
+void sendData(){
+	
+}
+
 unsigned char USART_receive(void)
 {   //wait for data to be received
 	loop_until_bit_is_set(UCSR0A,RXC0);
