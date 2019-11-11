@@ -109,6 +109,9 @@ class MainController:
         if (self.conn.inWaiting() > 0):
             data = self.conn.read(self.conn.inWaiting()).decode('ascii')
 
+            for line in data:
+                print(line)
+
         return data
 
     def getData(self, type):

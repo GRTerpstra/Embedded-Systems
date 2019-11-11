@@ -101,21 +101,11 @@ Disassembly of section .text:
   a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000000a6 <SCH_Add_Task>:
-  Task will be first executed at T = 300 ticks, then 1300, 2300, etc.            
- 
--*------------------------------------------------------------------*/
-
-unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const unsigned int PERIOD)
-{
   a6:	0f 93       	push	r16
   a8:	1f 93       	push	r17
   aa:	cf 93       	push	r28
   ac:	df 93       	push	r29
   ae:	8c 01       	movw	r16, r24
-   unsigned char Index = 0;
-
-   // First find a gap in the array (if there is one)
-   while((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
   b0:	80 91 36 01 	lds	r24, 0x0136	; 0x800136 <__data_end>
   b4:	90 91 37 01 	lds	r25, 0x0137	; 0x800137 <__data_end+0x1>
   b8:	89 2b       	or	r24, r25
@@ -124,15 +114,7 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
   be:	f1 e0       	ldi	r31, 0x01	; 1
   c0:	21 e0       	ldi	r18, 0x01	; 1
   c2:	30 e0       	ldi	r19, 0x00	; 0
-   {
-      Index++;
   c4:	82 2f       	mov	r24, r18
-unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const unsigned int PERIOD)
-{
-   unsigned char Index = 0;
-
-   // First find a gap in the array (if there is one)
-   while((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
   c6:	e9 01       	movw	r28, r18
   c8:	a7 81       	ldd	r26, Z+7	; 0x07
   ca:	b0 85       	ldd	r27, Z+8	; 0x08
@@ -141,36 +123,12 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
   d0:	37 96       	adiw	r30, 0x07	; 7
   d2:	ab 2b       	or	r26, r27
   d4:	b9 f7       	brne	.-18     	; 0xc4 <SCH_Add_Task+0x1e>
-   {
-      Index++;
-   }
-
-   // Have we reached the end of the list?   
-   if(Index == SCH_MAX_TASKS)
   d6:	85 30       	cpi	r24, 0x05	; 5
   d8:	21 f4       	brne	.+8      	; 0xe2 <SCH_Add_Task+0x3c>
   da:	15 c0       	rjmp	.+42     	; 0x106 <SCH_Add_Task+0x60>
-unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const unsigned int PERIOD)
-{
-   unsigned char Index = 0;
-
-   // First find a gap in the array (if there is one)
-   while((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
   dc:	c0 e0       	ldi	r28, 0x00	; 0
   de:	d0 e0       	ldi	r29, 0x00	; 0
- 
--*------------------------------------------------------------------*/
-
-unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const unsigned int PERIOD)
-{
-   unsigned char Index = 0;
   e0:	80 e0       	ldi	r24, 0x00	; 0
-      // Task list is full, return an error code
-      return SCH_MAX_TASKS;  
-   }
-
-   // If we're here, there is a space in the task array
-   SCH_tasks_G[Index].pTask = pFunction;
   e2:	fe 01       	movw	r30, r28
   e4:	ee 0f       	add	r30, r30
   e6:	ff 1f       	adc	r31, r31
@@ -184,18 +142,11 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
   f6:	fe 4f       	sbci	r31, 0xFE	; 254
   f8:	11 83       	std	Z+1, r17	; 0x01
   fa:	00 83       	st	Z, r16
-   SCH_tasks_G[Index].Delay =DELAY;
   fc:	73 83       	std	Z+3, r23	; 0x03
   fe:	62 83       	std	Z+2, r22	; 0x02
-   SCH_tasks_G[Index].Period = PERIOD;
  100:	55 83       	std	Z+5, r21	; 0x05
  102:	44 83       	std	Z+4, r20	; 0x04
-   SCH_tasks_G[Index].RunMe = 0;
  104:	16 82       	std	Z+6, r1	; 0x06
-
-   // return position of task (to allow later deletion)
-   return Index;
-}
  106:	df 91       	pop	r29
  108:	cf 91       	pop	r28
  10a:	1f 91       	pop	r17
@@ -203,12 +154,6 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
  10e:	08 95       	ret
 
 00000110 <SCH_Delete_Task>:
-unsigned char SCH_Delete_Task(const unsigned char TASK_INDEX)
-{
-   // Return_code can be used for error reporting, NOT USED HERE THOUGH!
-   unsigned char Return_code = 0;
-
-   SCH_tasks_G[TASK_INDEX].pTask = 0;
  110:	27 e0       	ldi	r18, 0x07	; 7
  112:	82 9f       	mul	r24, r18
  114:	c0 01       	movw	r24, r0
@@ -218,27 +163,15 @@ unsigned char SCH_Delete_Task(const unsigned char TASK_INDEX)
  11c:	fe 4f       	sbci	r31, 0xFE	; 254
  11e:	11 82       	std	Z+1, r1	; 0x01
  120:	10 82       	st	Z, r1
-   SCH_tasks_G[TASK_INDEX].Delay = 0;
  122:	13 82       	std	Z+3, r1	; 0x03
  124:	12 82       	std	Z+2, r1	; 0x02
-   SCH_tasks_G[TASK_INDEX].Period = 0;
  126:	15 82       	std	Z+5, r1	; 0x05
  128:	14 82       	std	Z+4, r1	; 0x04
-   SCH_tasks_G[TASK_INDEX].RunMe = 0;
  12a:	16 82       	std	Z+6, r1	; 0x06
-
-   return Return_code;
-}
  12c:	80 e0       	ldi	r24, 0x00	; 0
  12e:	08 95       	ret
 
 00000130 <SCH_Dispatch_Tasks>:
-  This function must be called (repeatedly) from the main loop.
-
--*------------------------------------------------------------------*/
-
-void SCH_Dispatch_Tasks(void)
-{
  130:	ef 92       	push	r14
  132:	ff 92       	push	r15
  134:	1f 93       	push	r17
@@ -246,13 +179,7 @@ void SCH_Dispatch_Tasks(void)
  138:	df 93       	push	r29
  13a:	c6 e3       	ldi	r28, 0x36	; 54
  13c:	d1 e0       	ldi	r29, 0x01	; 1
-   unsigned char Index;
-
-   // Dispatches (runs) the next task (if one is ready)
-   for(Index = 0; Index < SCH_MAX_TASKS; Index++)
  13e:	10 e0       	ldi	r17, 0x00	; 0
-   {
-      if((SCH_tasks_G[Index].RunMe > 0) && (SCH_tasks_G[Index].pTask != 0))
  140:	8e 81       	ldd	r24, Y+6	; 0x06
  142:	88 23       	and	r24, r24
  144:	79 f0       	breq	.+30     	; 0x164 <SCH_Dispatch_Tasks+0x34>
@@ -260,41 +187,20 @@ void SCH_Dispatch_Tasks(void)
  148:	f9 81       	ldd	r31, Y+1	; 0x01
  14a:	30 97       	sbiw	r30, 0x00	; 0
  14c:	59 f0       	breq	.+22     	; 0x164 <SCH_Dispatch_Tasks+0x34>
-      {
-         (*SCH_tasks_G[Index].pTask)();  // Run the task
  14e:	09 95       	icall
-         SCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
  150:	8e 81       	ldd	r24, Y+6	; 0x06
  152:	81 50       	subi	r24, 0x01	; 1
  154:	8e 83       	std	Y+6, r24	; 0x06
-
-         // Periodic tasks will automatically run again
-         // - if this is a 'one shot' task, remove it from the array
-         if(SCH_tasks_G[Index].Period == 0)
  156:	8c 81       	ldd	r24, Y+4	; 0x04
  158:	9d 81       	ldd	r25, Y+5	; 0x05
  15a:	89 2b       	or	r24, r25
  15c:	19 f4       	brne	.+6      	; 0x164 <SCH_Dispatch_Tasks+0x34>
-         {
-            SCH_Delete_Task(Index);
  15e:	81 2f       	mov	r24, r17
  160:	0e 94 88 00 	call	0x110	; 0x110 <SCH_Delete_Task>
-void SCH_Dispatch_Tasks(void)
-{
-   unsigned char Index;
-
-   // Dispatches (runs) the next task (if one is ready)
-   for(Index = 0; Index < SCH_MAX_TASKS; Index++)
  164:	1f 5f       	subi	r17, 0xFF	; 255
  166:	27 96       	adiw	r28, 0x07	; 7
  168:	15 30       	cpi	r17, 0x05	; 5
  16a:	51 f7       	brne	.-44     	; 0x140 <SCH_Dispatch_Tasks+0x10>
-         {
-            SCH_Delete_Task(Index);
-         }
-      }
-   }
-}
  16c:	df 91       	pop	r29
  16e:	cf 91       	pop	r28
  170:	1f 91       	pop	r17
@@ -303,67 +209,29 @@ void SCH_Dispatch_Tasks(void)
  176:	08 95       	ret
 
 00000178 <SCH_Init_T1>:
-  You must call this function before using the scheduler.  
-
--*------------------------------------------------------------------*/
-
-void SCH_Init_T1(void)
-{
  178:	cf 93       	push	r28
-   unsigned char i;
-
-   for(i = 0; i < SCH_MAX_TASKS; i++)
  17a:	c0 e0       	ldi	r28, 0x00	; 0
-   {
-      SCH_Delete_Task(i);
  17c:	8c 2f       	mov	r24, r28
  17e:	0e 94 88 00 	call	0x110	; 0x110 <SCH_Delete_Task>
-
-void SCH_Init_T1(void)
-{
-   unsigned char i;
-
-   for(i = 0; i < SCH_MAX_TASKS; i++)
  182:	cf 5f       	subi	r28, 0xFF	; 255
  184:	c5 30       	cpi	r28, 0x05	; 5
  186:	d1 f7       	brne	.-12     	; 0x17c <SCH_Init_T1+0x4>
-
-   // Set up Timer 1
-   // Values for 1ms and 10ms ticks are provided for various crystals
-
-   // Hier moet de timer periode worden aangepast ....!
-   OCR1A = (uint16_t)625;   		     // 10ms = (256/16.000.000) * 625
  188:	81 e7       	ldi	r24, 0x71	; 113
  18a:	92 e0       	ldi	r25, 0x02	; 2
  18c:	90 93 89 00 	sts	0x0089, r25	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
  190:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
-   TCCR1B = (1 << CS12) | (1 << WGM12);  // prescale op 64, top counter = value OCR1A (CTC mode)
  194:	8c e0       	ldi	r24, 0x0C	; 12
  196:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__DATA_REGION_ORIGIN__+0x21>
-   TIMSK1 = 1 << OCIE1A;   		     // Timer 1 Output Compare A Match Interrupt Enable
  19a:	82 e0       	ldi	r24, 0x02	; 2
  19c:	80 93 6f 00 	sts	0x006F, r24	; 0x80006f <__DATA_REGION_ORIGIN__+0xf>
-}
  1a0:	cf 91       	pop	r28
  1a2:	08 95       	ret
 
 000001a4 <SCH_Start>:
- 
--*------------------------------------------------------------------*/
-
-void SCH_Start(void)
-{
-      sei();
  1a4:	78 94       	sei
  1a6:	08 95       	ret
 
 000001a8 <__vector_11>:
-  determined by the timer settings in SCH_Init_T1().
-
--*------------------------------------------------------------------*/
-
-ISR(TIMER1_COMPA_vect)
-{
  1a8:	1f 92       	push	r1
  1aa:	0f 92       	push	r0
  1ac:	0f b6       	in	r0, 0x3f	; 63
@@ -381,66 +249,32 @@ ISR(TIMER1_COMPA_vect)
  1c4:	f1 e0       	ldi	r31, 0x01	; 1
  1c6:	29 e5       	ldi	r18, 0x59	; 89
  1c8:	31 e0       	ldi	r19, 0x01	; 1
-   unsigned char Index;
-   for(Index = 0; Index < SCH_MAX_TASKS; Index++)
-   {
-      // Check if there is a task at this location
-      if(SCH_tasks_G[Index].pTask)
  1ca:	80 81       	ld	r24, Z
  1cc:	91 81       	ldd	r25, Z+1	; 0x01
  1ce:	89 2b       	or	r24, r25
  1d0:	91 f0       	breq	.+36     	; 0x1f6 <__vector_11+0x4e>
-      {
-         if(SCH_tasks_G[Index].Delay == 0)
  1d2:	82 81       	ldd	r24, Z+2	; 0x02
  1d4:	93 81       	ldd	r25, Z+3	; 0x03
  1d6:	00 97       	sbiw	r24, 0x00	; 0
  1d8:	59 f4       	brne	.+22     	; 0x1f0 <__vector_11+0x48>
-         {
-            // The task is due to run, Inc. the 'RunMe' flag
-            SCH_tasks_G[Index].RunMe += 1;
  1da:	86 81       	ldd	r24, Z+6	; 0x06
  1dc:	8f 5f       	subi	r24, 0xFF	; 255
  1de:	86 83       	std	Z+6, r24	; 0x06
-
-            if(SCH_tasks_G[Index].Period)
  1e0:	84 81       	ldd	r24, Z+4	; 0x04
  1e2:	95 81       	ldd	r25, Z+5	; 0x05
  1e4:	00 97       	sbiw	r24, 0x00	; 0
  1e6:	39 f0       	breq	.+14     	; 0x1f6 <__vector_11+0x4e>
-            {
-               // Schedule periodic tasks to run again
-               SCH_tasks_G[Index].Delay = SCH_tasks_G[Index].Period;
-               SCH_tasks_G[Index].Delay -= 1;
  1e8:	01 97       	sbiw	r24, 0x01	; 1
  1ea:	93 83       	std	Z+3, r25	; 0x03
  1ec:	82 83       	std	Z+2, r24	; 0x02
  1ee:	03 c0       	rjmp	.+6      	; 0x1f6 <__vector_11+0x4e>
-            }
-         }
-         else
-         {
-            // Not yet ready to run: just decrement the delay
-            SCH_tasks_G[Index].Delay -= 1;
  1f0:	01 97       	sbiw	r24, 0x01	; 1
  1f2:	93 83       	std	Z+3, r25	; 0x03
  1f4:	82 83       	std	Z+2, r24	; 0x02
  1f6:	37 96       	adiw	r30, 0x07	; 7
--*------------------------------------------------------------------*/
-
-ISR(TIMER1_COMPA_vect)
-{
-   unsigned char Index;
-   for(Index = 0; Index < SCH_MAX_TASKS; Index++)
  1f8:	e2 17       	cp	r30, r18
  1fa:	f3 07       	cpc	r31, r19
  1fc:	31 f7       	brne	.-52     	; 0x1ca <__vector_11+0x22>
-            // Not yet ready to run: just decrement the delay
-            SCH_tasks_G[Index].Delay -= 1;
-         }
-      }
-   }
-}
  1fe:	ff 91       	pop	r31
  200:	ef 91       	pop	r30
  202:	bf 91       	pop	r27
@@ -456,35 +290,22 @@ ISR(TIMER1_COMPA_vect)
  216:	18 95       	reti
 
 00000218 <upDownAwning>:
-int distance_awning_up = 40;						// Distance at which the awning opens
-int distance_awning_down = 5;						// Distance at which the awning closes
-
-
-void upDownAwning()
-{
  218:	0f 93       	push	r16
  21a:	1f 93       	push	r17
  21c:	cf 93       	push	r28
  21e:	df 93       	push	r29
-	int sensor_light = atoi(light_sensor);					// Convert light sensor value to int and set ls
  220:	8b e5       	ldi	r24, 0x5B	; 91
  222:	91 e0       	ldi	r25, 0x01	; 1
  224:	0e 94 93 04 	call	0x926	; 0x926 <atoi>
  228:	ec 01       	movw	r28, r24
-	int sensor_temperature = atoi(temperature_sensor);				// Convert temperature sensor value to int and set ts
  22a:	80 e6       	ldi	r24, 0x60	; 96
  22c:	91 e0       	ldi	r25, 0x01	; 1
  22e:	0e 94 93 04 	call	0x926	; 0x926 <atoi>
  232:	8c 01       	movw	r16, r24
-	distanceStill();								// Get distance
  234:	0e 94 96 02 	call	0x52c	; 0x52c <distanceStill>
-	int sensor_distance = atoi(distance_sensor);					// Convert distance sensor value to int
  238:	87 e6       	ldi	r24, 0x67	; 103
  23a:	91 e0       	ldi	r25, 0x01	; 1
  23c:	0e 94 93 04 	call	0x926	; 0x926 <atoi>
-	
-	
-	if(sensor_light >= light_awning_down || sensor_temperature >= temperature_awning_down)
  240:	20 91 06 01 	lds	r18, 0x0106	; 0x800106 <light_awning_down>
  244:	30 91 07 01 	lds	r19, 0x0107	; 0x800107 <light_awning_down+0x1>
  248:	c2 17       	cp	r28, r18
@@ -495,22 +316,14 @@ void upDownAwning()
  256:	02 17       	cp	r16, r18
  258:	13 07       	cpc	r17, r19
  25a:	fc f0       	brlt	.+62     	; 0x29a <upDownAwning+0x82>
-	{
-		PORTB &= ~(1 << PB5);						// Green LED off
  25c:	2d 98       	cbi	0x05, 5	; 5
-		PORTB |= (1 << PB3);						// Red LED on
  25e:	2b 9a       	sbi	0x05, 3	; 5
-		
-		
-		if (sensor_distance > distance_awning_down)						// Makes yellow LED blink
  260:	20 91 00 01 	lds	r18, 0x0100	; 0x800100 <__data_start>
  264:	30 91 01 01 	lds	r19, 0x0101	; 0x800101 <__data_start+0x1>
  268:	28 17       	cp	r18, r24
  26a:	39 07       	cpc	r19, r25
  26c:	0c f0       	brlt	.+2      	; 0x270 <upDownAwning+0x58>
  26e:	40 c0       	rjmp	.+128    	; 0x2f0 <upDownAwning+0xd8>
-		{
-			PORTB |= (1 << PB4);
  270:	2c 9a       	sbi	0x05, 4	; 5
 	#else
 		//round up by default
@@ -527,8 +340,6 @@ void upDownAwning()
  27e:	e1 f7       	brne	.-8      	; 0x278 <upDownAwning+0x60>
  280:	00 c0       	rjmp	.+0      	; 0x282 <upDownAwning+0x6a>
  282:	00 00       	nop
-			_delay_ms(100);
-			PORTB &= ~(1 << PB4);
  284:	2c 98       	cbi	0x05, 4	; 5
  286:	2f ef       	ldi	r18, 0xFF	; 255
  288:	81 ee       	ldi	r24, 0xE1	; 225
@@ -540,10 +351,6 @@ void upDownAwning()
  294:	00 c0       	rjmp	.+0      	; 0x296 <upDownAwning+0x7e>
  296:	00 00       	nop
  298:	2b c0       	rjmp	.+86     	; 0x2f0 <upDownAwning+0xd8>
-			_delay_ms(100);
-		}
-	}
-	else if(sensor_light <= light_awning_up || sensor_temperature <= temperature_awning_up )			
  29a:	20 91 04 01 	lds	r18, 0x0104	; 0x800104 <light_awning_up>
  29e:	30 91 05 01 	lds	r19, 0x0105	; 0x800105 <light_awning_up+0x1>
  2a2:	2c 17       	cp	r18, r28
@@ -554,21 +361,13 @@ void upDownAwning()
  2b0:	20 17       	cp	r18, r16
  2b2:	31 07       	cpc	r19, r17
  2b4:	ec f0       	brlt	.+58     	; 0x2f0 <upDownAwning+0xd8>
-	{
-		PORTB &= ~(1 << PB3);						
  2b6:	2b 98       	cbi	0x05, 3	; 5
-		PORTB |= (1 << PB5);						
  2b8:	2d 9a       	sbi	0x05, 5	; 5
-		
-		
-		if (sensor_distance < distance_awning_up)						
  2ba:	20 91 02 01 	lds	r18, 0x0102	; 0x800102 <distance_awning_up>
  2be:	30 91 03 01 	lds	r19, 0x0103	; 0x800103 <distance_awning_up+0x1>
  2c2:	82 17       	cp	r24, r18
  2c4:	93 07       	cpc	r25, r19
  2c6:	a4 f4       	brge	.+40     	; 0x2f0 <upDownAwning+0xd8>
-		{
-			PORTB |= (1 << PB4);
  2c8:	2c 9a       	sbi	0x05, 4	; 5
  2ca:	2f ef       	ldi	r18, 0xFF	; 255
  2cc:	81 ee       	ldi	r24, 0xE1	; 225
@@ -579,8 +378,6 @@ void upDownAwning()
  2d6:	e1 f7       	brne	.-8      	; 0x2d0 <upDownAwning+0xb8>
  2d8:	00 c0       	rjmp	.+0      	; 0x2da <upDownAwning+0xc2>
  2da:	00 00       	nop
-			_delay_ms(100);
-			PORTB &= ~(1 << PB4);
  2dc:	2c 98       	cbi	0x05, 4	; 5
  2de:	2f ef       	ldi	r18, 0xFF	; 255
  2e0:	81 ee       	ldi	r24, 0xE1	; 225
@@ -591,11 +388,6 @@ void upDownAwning()
  2ea:	e1 f7       	brne	.-8      	; 0x2e4 <upDownAwning+0xcc>
  2ec:	00 c0       	rjmp	.+0      	; 0x2ee <upDownAwning+0xd6>
  2ee:	00 00       	nop
-			_delay_ms(100);
-		}
-	}
-	
-}
  2f0:	df 91       	pop	r29
  2f2:	cf 91       	pop	r28
  2f4:	1f 91       	pop	r17
@@ -603,51 +395,28 @@ void upDownAwning()
  2f8:	08 95       	ret
 
 000002fa <init_serial_connectie>:
-#define BAUDRATE 19200					// set the baudrate
-#define BAUD_PRESCALLER (((F_CPU / (BAUDRATE * 16UL))) - 1)
-
-void init_serial_connectie()
-{
-	UCSR0A = 0;							// disable U2X mode
  2fa:	10 92 c0 00 	sts	0x00C0, r1	; 0x8000c0 <__DATA_REGION_ORIGIN__+0x60>
-	UCSR0C = (1<<USBS0)|(3<<UCSZ00);	// Set frame format: 8data, 2stop bit
  2fe:	8e e0       	ldi	r24, 0x0E	; 14
  300:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
  304:	08 95       	ret
 
 00000306 <init_USART>:
-}
-
-void init_USART()
-{
-	UBRR0H = (uint8_t)(BAUD_PRESCALLER>>8);
  306:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__DATA_REGION_ORIGIN__+0x65>
-	UBRR0L = (uint8_t)(BAUD_PRESCALLER);
  30a:	83 e3       	ldi	r24, 0x33	; 51
  30c:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__DATA_REGION_ORIGIN__+0x64>
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);		// Enable receiver and transmitter
  310:	e1 ec       	ldi	r30, 0xC1	; 193
  312:	f0 e0       	ldi	r31, 0x00	; 0
  314:	88 e1       	ldi	r24, 0x18	; 24
  316:	80 83       	st	Z, r24
-	UCSR0C = (3<<UCSZ00);
  318:	86 e0       	ldi	r24, 0x06	; 6
  31a:	80 93 c2 00 	sts	0x00C2, r24	; 0x8000c2 <__DATA_REGION_ORIGIN__+0x62>
-	UCSR0B |= (1 << RXCIE0 );			
  31e:	80 81       	ld	r24, Z
  320:	80 68       	ori	r24, 0x80	; 128
  322:	80 83       	st	Z, r24
  324:	08 95       	ret
 
 00000326 <init_ttc_scheduler>:
-								
-}
-
-void init_ttc_scheduler()
-{
-	SCH_Init_T1();					//Set up scheduler
  326:	0e 94 bc 00 	call	0x178	; 0x178 <SCH_Init_T1>
-	SCH_Add_Task(temperature,1,50); //Add 'temperature' task
  32a:	42 e3       	ldi	r20, 0x32	; 50
  32c:	50 e0       	ldi	r21, 0x00	; 0
  32e:	61 e0       	ldi	r22, 0x01	; 1
@@ -655,7 +424,6 @@ void init_ttc_scheduler()
  332:	84 ef       	ldi	r24, 0xF4	; 244
  334:	91 e0       	ldi	r25, 0x01	; 1
  336:	0e 94 53 00 	call	0xa6	; 0xa6 <SCH_Add_Task>
-	SCH_Add_Task(light,2,50);		//Add 'light' task
  33a:	42 e3       	ldi	r20, 0x32	; 50
  33c:	50 e0       	ldi	r21, 0x00	; 0
  33e:	62 e0       	ldi	r22, 0x02	; 2
@@ -663,7 +431,6 @@ void init_ttc_scheduler()
  342:	8e e2       	ldi	r24, 0x2E	; 46
  344:	92 e0       	ldi	r25, 0x02	; 2
  346:	0e 94 53 00 	call	0xa6	; 0xa6 <SCH_Add_Task>
-	SCH_Add_Task(distance,3,50);	//Add 'distance' task
  34a:	42 e3       	ldi	r20, 0x32	; 50
  34c:	50 e0       	ldi	r21, 0x00	; 0
  34e:	63 e0       	ldi	r22, 0x03	; 3
@@ -671,7 +438,6 @@ void init_ttc_scheduler()
  352:	8e e5       	ldi	r24, 0x5E	; 94
  354:	92 e0       	ldi	r25, 0x02	; 2
  356:	0e 94 53 00 	call	0xa6	; 0xa6 <SCH_Add_Task>
-	SCH_Add_Task(nextLine,4,50);	//Add 'nextline' task
  35a:	42 e3       	ldi	r20, 0x32	; 50
  35c:	50 e0       	ldi	r21, 0x00	; 0
  35e:	64 e0       	ldi	r22, 0x04	; 4
@@ -679,7 +445,6 @@ void init_ttc_scheduler()
  362:	89 ed       	ldi	r24, 0xD9	; 217
  364:	92 e0       	ldi	r25, 0x02	; 2
  366:	0e 94 53 00 	call	0xa6	; 0xa6 <SCH_Add_Task>
-	SCH_Add_Task(upDownAwning,0,25);		//Add 'updown' task
  36a:	49 e1       	ldi	r20, 0x19	; 25
  36c:	50 e0       	ldi	r21, 0x00	; 0
  36e:	60 e0       	ldi	r22, 0x00	; 0
@@ -687,80 +452,46 @@ void init_ttc_scheduler()
  372:	8c e0       	ldi	r24, 0x0C	; 12
  374:	91 e0       	ldi	r25, 0x01	; 1
  376:	0e 94 53 00 	call	0xa6	; 0xa6 <SCH_Add_Task>
-	SCH_Start();					//Start running the scheduler 
  37a:	0e 94 d2 00 	call	0x1a4	; 0x1a4 <SCH_Start>
  37e:	08 95       	ret
 
 00000380 <init_analog>:
-}
-
-void init_analog()
-{
-	ADCSRA |= ((1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0));    // 16Mhz/128 = 125Khz the ADC reference clock
  380:	ea e7       	ldi	r30, 0x7A	; 122
  382:	f0 e0       	ldi	r31, 0x00	; 0
  384:	80 81       	ld	r24, Z
  386:	87 60       	ori	r24, 0x07	; 7
  388:	80 83       	st	Z, r24
-	ADMUX |= (1<<REFS0);							 // Voltage reference from AVCC (5v)
  38a:	ac e7       	ldi	r26, 0x7C	; 124
  38c:	b0 e0       	ldi	r27, 0x00	; 0
  38e:	8c 91       	ld	r24, X
  390:	80 64       	ori	r24, 0x40	; 64
  392:	8c 93       	st	X, r24
-	ADCSRA |= (1<<ADEN);							 // Turn on ADC
  394:	80 81       	ld	r24, Z
  396:	80 68       	ori	r24, 0x80	; 128
  398:	80 83       	st	Z, r24
-	ADCSRA |= (1<<ADSC);							 // Do an initial conversion because this one is the slowest and to ensure that everything is up and running
  39a:	80 81       	ld	r24, Z
  39c:	80 64       	ori	r24, 0x40	; 64
  39e:	80 83       	st	Z, r24
  3a0:	08 95       	ret
 
 000003a2 <init_distance>:
-}
-
-void init_distance()
-{
-	DDRD |= (1<< PD7);			// Pin 3 Trigger Output
  3a2:	57 9a       	sbi	0x0a, 7	; 10
-	DDRD &= ~(1 << PD6);		// Pin 2 Echo Input
  3a4:	56 98       	cbi	0x0a, 6	; 10
  3a6:	08 95       	ret
 
 000003a8 <init_LEDS>:
-}
-
-void init_LEDS()
-{
-	DDRB |= (1 <<PB3);			// pin0 B = output
  3a8:	23 9a       	sbi	0x04, 3	; 4
-	DDRB |= (1 << PB4);			// pin1 B = output
  3aa:	24 9a       	sbi	0x04, 4	; 4
-	DDRB |= (1 << PB5);			// pin2 B = output
  3ac:	25 9a       	sbi	0x04, 5	; 4
-	PORTB |= (1 << PB5);		// Green LED on
  3ae:	2d 9a       	sbi	0x05, 5	; 5
  3b0:	08 95       	ret
 
 000003b2 <setup>:
-#include "init.h"
-
-
-void setup()
-{
-	init_serial_connectie();
  3b2:	0e 94 7d 01 	call	0x2fa	; 0x2fa <init_serial_connectie>
-	init_analog();				// Setup the ADC
  3b6:	0e 94 c0 01 	call	0x380	; 0x380 <init_analog>
-	init_USART();				// Setup the USART
  3ba:	0e 94 83 01 	call	0x306	; 0x306 <init_USART>
-	init_distance();			// Setup distance sensor
  3be:	0e 94 d1 01 	call	0x3a2	; 0x3a2 <init_distance>
-	init_ttc_scheduler();		// Setup scheduler
  3c2:	0e 94 93 01 	call	0x326	; 0x326 <init_ttc_scheduler>
-	init_LEDS();				// Setup LED
  3c6:	0e 94 d4 01 	call	0x3a8	; 0x3a8 <init_LEDS>
  3ca:	2f ef       	ldi	r18, 0xFF	; 255
  3cc:	81 ee       	ldi	r24, 0xE1	; 225
@@ -774,32 +505,16 @@ void setup()
  3dc:	08 95       	ret
 
 000003de <main>:
-	_delay_ms(100);				// Half second delay to initialize everything
-}
-
-int main(void)
-{
-	setup();
  3de:	0e 94 d9 01 	call	0x3b2	; 0x3b2 <setup>
-	while(1) {
-		SCH_Dispatch_Tasks();
  3e2:	0e 94 98 00 	call	0x130	; 0x130 <SCH_Dispatch_Tasks>
  3e6:	fd cf       	rjmp	.-6      	; 0x3e2 <main+0x4>
 
 000003e8 <temperature>:
-#include "sensors.h"
-#include "serial.h"
-
-void temperature()
-{
-	USART_putstring(" Temperature : ");
  3e8:	8c e0       	ldi	r24, 0x0C	; 12
  3ea:	91 e0       	ldi	r25, 0x01	; 1
  3ec:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
-	analog_value = read_analog(0);
  3f0:	80 e0       	ldi	r24, 0x00	; 0
  3f2:	0e 94 e0 02 	call	0x5c0	; 0x5c0 <read_analog>
-	analog_value = (((((double)analog_value / 1024) * 5) - 0.5) * 100);		 // Calculate temperature
  3f6:	bc 01       	movw	r22, r24
  3f8:	80 e0       	ldi	r24, 0x00	; 0
  3fa:	90 e0       	ldi	r25, 0x00	; 0
@@ -839,30 +554,20 @@ void temperature()
  442:	60 e6       	ldi	r22, 0x60	; 96
  444:	71 e0       	ldi	r23, 0x01	; 1
  446:	0e 94 b1 04 	call	0x962	; 0x962 <__itoa_ncheck>
-	itoa(analog_value, temperature_sensor, 10);								//  Convert the read value to an ascii string
-	USART_putstring(temperature_sensor);								   //   Send the converted value to the terminal
  44a:	80 e6       	ldi	r24, 0x60	; 96
  44c:	91 e0       	ldi	r25, 0x01	; 1
  44e:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
-	USART_putstring("  ");
  452:	8c e1       	ldi	r24, 0x1C	; 28
  454:	91 e0       	ldi	r25, 0x01	; 1
  456:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
  45a:	08 95       	ret
 
 0000045c <light>:
-}
-
-void light()
-{
-	USART_putstring(" Light : ");
  45c:	8f e1       	ldi	r24, 0x1F	; 31
  45e:	91 e0       	ldi	r25, 0x01	; 1
  460:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
-	analog_value = read_analog(1);
  464:	81 e0       	ldi	r24, 0x01	; 1
  466:	0e 94 e0 02 	call	0x5c0	; 0x5c0 <read_analog>
-	analog_value = ((((double)analog_value)/1024)*100 *1.5);			  // Calculate the amount of light
  46a:	bc 01       	movw	r22, r24
  46c:	80 e0       	ldi	r24, 0x00	; 0
  46e:	90 e0       	ldi	r25, 0x00	; 0
@@ -891,29 +596,19 @@ void light()
  4aa:	6b e5       	ldi	r22, 0x5B	; 91
  4ac:	71 e0       	ldi	r23, 0x01	; 1
  4ae:	0e 94 b1 04 	call	0x962	; 0x962 <__itoa_ncheck>
-	itoa(analog_value, light_sensor, 10);							  // Convert the read value to an ascii string
-	USART_putstring(light_sensor);								  // Send the converted value to the terminal
  4b2:	8b e5       	ldi	r24, 0x5B	; 91
  4b4:	91 e0       	ldi	r25, 0x01	; 1
  4b6:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
  4ba:	08 95       	ret
 
 000004bc <distance>:
-	
-}
-
-void distance()
-{
-	OCR1A = 0x640;								
  4bc:	80 e4       	ldi	r24, 0x40	; 64
  4be:	96 e0       	ldi	r25, 0x06	; 6
  4c0:	90 93 89 00 	sts	0x0089, r25	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
  4c4:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
-	USART_putstring(" Distance : ");
  4c8:	89 e2       	ldi	r24, 0x29	; 41
  4ca:	91 e0       	ldi	r25, 0x01	; 1
  4cc:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
-	PORTD |= (1<< PD7);
  4d0:	5f 9a       	sbi	0x0b, 7	; 11
 	#else
 		//round up by default
@@ -925,20 +620,13 @@ void distance()
  4d4:	8a 95       	dec	r24
  4d6:	f1 f7       	brne	.-4      	; 0x4d4 <distance+0x18>
  4d8:	00 00       	nop
-	_delay_us(10);
-	PORTD &= ~(1 << PD7);							// Give pulse from 10us
  4da:	5f 98       	cbi	0x0b, 7	; 11
-	
-	loop_until_bit_is_set(PIND, PD6);
  4dc:	4e 9b       	sbis	0x09, 6	; 9
  4de:	fe cf       	rjmp	.-4      	; 0x4dc <distance+0x20>
-	TCNT1 = 0;
  4e0:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
  4e4:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
-	loop_until_bit_is_clear(PIND, PD6);
  4e8:	4e 99       	sbic	0x09, 6	; 9
  4ea:	fe cf       	rjmp	.-4      	; 0x4e8 <distance+0x2c>
-	uint16_t count = TCNT1;
  4ec:	60 91 84 00 	lds	r22, 0x0084	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
  4f0:	70 91 85 00 	lds	r23, 0x0085	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
  4f4:	80 e0       	ldi	r24, 0x00	; 0
@@ -956,48 +644,31 @@ void distance()
  512:	67 e6       	ldi	r22, 0x67	; 103
  514:	71 e0       	ldi	r23, 0x01	; 1
  516:	0e 94 b1 04 	call	0x962	; 0x962 <__itoa_ncheck>
-	float distance = ((float)count / 4);		// Calculate the distance
-
-	itoa(distance, distance_sensor, 10);        // Convert the read value to an ascii string
-	USART_putstring(distance_sensor);			// Send the converted value to the terminal
  51a:	87 e6       	ldi	r24, 0x67	; 103
  51c:	91 e0       	ldi	r25, 0x01	; 1
  51e:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
-	USART_putstring("  ");
  522:	8c e1       	ldi	r24, 0x1C	; 28
  524:	91 e0       	ldi	r25, 0x01	; 1
  526:	0e 94 ca 02 	call	0x594	; 0x594 <USART_putstring>
  52a:	08 95       	ret
 
 0000052c <distanceStill>:
-}
-
-void distanceStill()
-{
-	OCR1A = 0x640;								
  52c:	80 e4       	ldi	r24, 0x40	; 64
  52e:	96 e0       	ldi	r25, 0x06	; 6
  530:	90 93 89 00 	sts	0x0089, r25	; 0x800089 <__DATA_REGION_ORIGIN__+0x29>
  534:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <__DATA_REGION_ORIGIN__+0x28>
-	PORTD |= (1 << PD7);
  538:	5f 9a       	sbi	0x0b, 7	; 11
  53a:	85 e3       	ldi	r24, 0x35	; 53
  53c:	8a 95       	dec	r24
  53e:	f1 f7       	brne	.-4      	; 0x53c <distanceStill+0x10>
  540:	00 00       	nop
-	_delay_us(10);
-	PORTD &= ~(1<< PD7);							
  542:	5f 98       	cbi	0x0b, 7	; 11
-	loop_until_bit_is_set(PIND, PD6);
  544:	4e 9b       	sbis	0x09, 6	; 9
  546:	fe cf       	rjmp	.-4      	; 0x544 <distanceStill+0x18>
-	TCNT1 = 0;
  548:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
  54c:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
-	loop_until_bit_is_clear(PIND, PD6);
  550:	4e 99       	sbic	0x09, 6	; 9
  552:	fe cf       	rjmp	.-4      	; 0x550 <distanceStill+0x24>
-	uint16_t count = TCNT1;
  554:	60 91 84 00 	lds	r22, 0x0084	; 0x800084 <__DATA_REGION_ORIGIN__+0x24>
  558:	70 91 85 00 	lds	r23, 0x0085	; 0x800085 <__DATA_REGION_ORIGIN__+0x25>
  55c:	80 e0       	ldi	r24, 0x00	; 0
@@ -1018,91 +689,54 @@ void distanceStill()
  582:	08 95       	ret
 
 00000584 <USART_transmit>:
-	return UDR0;
-}
-
-void USART_transmit(unsigned char data)
-{	// Wait for empty transmit buffer
-	loop_until_bit_is_set(UCSR0A, UDRE0);
  584:	e0 ec       	ldi	r30, 0xC0	; 192
  586:	f0 e0       	ldi	r31, 0x00	; 0
  588:	90 81       	ld	r25, Z
  58a:	95 ff       	sbrs	r25, 5
  58c:	fd cf       	rjmp	.-6      	; 0x588 <USART_transmit+0x4>
-	//puts data into buffer, sends the data
-	UDR0 = data;
  58e:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__DATA_REGION_ORIGIN__+0x66>
  592:	08 95       	ret
 
 00000594 <USART_putstring>:
-}
-
-void USART_putstring(char* StringPtr)
-{
  594:	cf 93       	push	r28
  596:	df 93       	push	r29
  598:	ec 01       	movw	r28, r24
-	while(*StringPtr != 0x00){       //check if there is still more chars send, this is done checking the actual char and see if it is different from the null char
  59a:	88 81       	ld	r24, Y
  59c:	88 23       	and	r24, r24
  59e:	31 f0       	breq	.+12     	; 0x5ac <USART_putstring+0x18>
  5a0:	21 96       	adiw	r28, 0x01	; 1
-		USART_transmit(*StringPtr);  // Using the simple send function we send one char at a time
  5a2:	0e 94 c2 02 	call	0x584	; 0x584 <USART_transmit>
-	UDR0 = data;
-}
-
-void USART_putstring(char* StringPtr)
-{
-	while(*StringPtr != 0x00){       //check if there is still more chars send, this is done checking the actual char and see if it is different from the null char
  5a6:	89 91       	ld	r24, Y+
  5a8:	81 11       	cpse	r24, r1
  5aa:	fb cf       	rjmp	.-10     	; 0x5a2 <USART_putstring+0xe>
-		USART_transmit(*StringPtr);  // Using the simple send function we send one char at a time
-	StringPtr++;}                    // Increment the pointer, so the next char can be read
-}
  5ac:	df 91       	pop	r29
  5ae:	cf 91       	pop	r28
  5b0:	08 95       	ret
 
 000005b2 <nextLine>:
-
-void nextLine()
-{
-	USART_transmit('\r');			  //Set the new line to the begin of the page
  5b2:	8d e0       	ldi	r24, 0x0D	; 13
  5b4:	0e 94 c2 02 	call	0x584	; 0x584 <USART_transmit>
-	USART_transmit('\n');			  //Go to next line
  5b8:	8a e0       	ldi	r24, 0x0A	; 10
  5ba:	0e 94 c2 02 	call	0x584	; 0x584 <USART_transmit>
  5be:	08 95       	ret
 
 000005c0 <read_analog>:
-}
-
-uint16_t read_analog(uint8_t value)
-{
-	ADMUX &= 0xF0;                      //Clear the older channel that was read
  5c0:	ec e7       	ldi	r30, 0x7C	; 124
  5c2:	f0 e0       	ldi	r31, 0x00	; 0
  5c4:	90 81       	ld	r25, Z
  5c6:	90 7f       	andi	r25, 0xF0	; 240
  5c8:	90 83       	st	Z, r25
-	ADMUX |= value;                     //Defines the new analog channel to be read
  5ca:	90 81       	ld	r25, Z
  5cc:	89 2b       	or	r24, r25
  5ce:	80 83       	st	Z, r24
-	ADCSRA |= (1 << ADSC);              //Starts a new calculation
  5d0:	ea e7       	ldi	r30, 0x7A	; 122
  5d2:	f0 e0       	ldi	r31, 0x00	; 0
  5d4:	80 81       	ld	r24, Z
  5d6:	80 64       	ori	r24, 0x40	; 64
  5d8:	80 83       	st	Z, r24
-	while(ADCSRA & (1 << ADSC));        //Wait until the calculation is done
  5da:	80 81       	ld	r24, Z
  5dc:	86 fd       	sbrc	r24, 6
  5de:	fd cf       	rjmp	.-6      	; 0x5da <read_analog+0x1a>
-	return ADCW;						//Returns the analog value of the selected channel
  5e0:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <__DATA_REGION_ORIGIN__+0x18>
  5e4:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <__DATA_REGION_ORIGIN__+0x19>
  5e8:	08 95       	ret

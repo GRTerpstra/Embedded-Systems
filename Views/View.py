@@ -4,7 +4,6 @@ import math
 
 class View():
     def __init__(self, mainModel, redraw = True):
-
         #size
         self.width = 100
         self.height = 100
@@ -30,6 +29,9 @@ class View():
         self.screen = None
 
         self.show = False
+        self.updateNeeded = True
+
+        self.canvas = None
 
         super().__init__()
 
@@ -41,6 +43,8 @@ class View():
         if(reset):
             self.screen = self.getScreem()
 
+        self.updateNeeded = False
+
     def getCanvas(self, reset = False):
         if(self.screen == None or reset):
             return self.getScreen()
@@ -51,6 +55,8 @@ class View():
         canvas = Canvas(self.mainModel.mainFrame, width=self.width, height=self.height, highlightthickness=0)
 
         self.drawFrame(canvas, 0, 0, self.width, self.height, self.bgColor, self.borderColor, self.borderWidth, self.borderHeight)
+
+        self.canvas = canvas
 
         return canvas
 
