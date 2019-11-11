@@ -7,7 +7,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
-#define F_CPU 16000000UL
+#define F_CPU 16E6
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
@@ -23,6 +23,7 @@ uint16_t analog_echo;						// Reads the analog echo
 char temperature_sensor[5];					// Value of the temperature sensor
 char light_sensor[5];						// Value of light sensor
 char distance_sensor[10];					// Value of distance sensor
+
 
 int temperature_awning_down = 23;							// Temperature at which the awning closes
 int temperature_awning_up = 17;							// Temperature at which the awning opens
@@ -54,13 +55,13 @@ void upDownAwning()
 			_delay_ms(100);
 		}
 	}
-	else if(sensor_light <= light_awning_up || sensor_temperature <= temperature_awning_up )			
+	else if(sensor_light <= light_awning_up || sensor_temperature <= temperature_awning_up )
 	{
-		PORTB &= ~(1 << PB3);						
-		PORTB |= (1 << PB5);						
+		PORTB &= ~(1 << PB3);
+		PORTB |= (1 << PB5);
 		
 		
-		if (sensor_distance < distance_awning_up)						
+		if (sensor_distance < distance_awning_up)
 		{
 			PORTB |= (1 << PB4);
 			_delay_ms(100);

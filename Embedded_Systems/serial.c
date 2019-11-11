@@ -8,7 +8,7 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
-#define F_CPU 16000000UL
+#define F_CPU 16E6
 #include <util/delay.h>
 
 void sendData(){

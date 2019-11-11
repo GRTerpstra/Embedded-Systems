@@ -10,7 +10,8 @@
 #define AWNING_H_
 
 
-void upDownAwning();					
+void upDownAwning();	
+
 
 
 // Variables

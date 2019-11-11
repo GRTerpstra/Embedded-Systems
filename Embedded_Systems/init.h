@@ -9,7 +9,7 @@
 #ifndef INIT_H_
 #define INIT_H_
 
-void init_serial_connectie();					
+				
 void init_analog();						
 void init_USART();						
 void init_distance();						

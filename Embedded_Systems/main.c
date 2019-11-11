@@ -13,7 +13,7 @@
  */
 
 #include <avr/io.h>
-#define F_CPU 16000000UL
+#define F_CPU 16E6
 #include <util/delay.h>
 
 #include "AVR_TTC_scheduler.h"
@@ -22,7 +22,6 @@
 
 void setup()
 {
-	init_serial_connectie();
 	init_analog();				// Setup the ADC
 	init_USART();				// Setup the USART
 	init_distance();			// Setup distance sensor

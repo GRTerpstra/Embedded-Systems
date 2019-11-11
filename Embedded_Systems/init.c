@@ -8,30 +8,26 @@
 
 #include <stdlib.h>
 #include <avr/interrupt.h>
-#define F_CPU 16000000UL
+#define F_CPU 16E6
 
 #include "AVR_TTC_scheduler.h"
 #include "awning.h"
 #include "sensors.h"
 #include "serial.h"
 
-#define BAUDRATE 19200					// set the baudrate
-#define BAUD_PRESCALLER (((F_CPU / (BAUDRATE * 16UL))) - 1)
+#define UBBRVAL 51
 
-void init_serial_connectie()
-{
-	UCSR0A = 0;							// disable U2X mode
-	UCSR0C = (1<<USBS0)|(3<<UCSZ00);	// Set frame format: 8data, 2stop bit
-}
+
 
 void init_USART()
 {
-	UBRR0H = (uint8_t)(BAUD_PRESCALLER>>8);
-	UBRR0L = (uint8_t)(BAUD_PRESCALLER);
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);		// Enable receiver and transmitter
-	UCSR0C = (3<<UCSZ00);
-	UCSR0B |= (1 << RXCIE0 );			
-								
+	/* Set baud rate */
+	UBRR0H = 0;
+	UBRR0L = UBBRVAL;
+	/* Enable receiver and transmitter */
+	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+	/* Set frame format: 8data, 1stop bit */
+	UCSR0C = (1<<UCSZ01) |(1<<UCSZ00);
 }
 
 void init_ttc_scheduler()
@@ -41,7 +37,7 @@ void init_ttc_scheduler()
 	SCH_Add_Task(light,2,100);		//Add 'light' task
 	SCH_Add_Task(distance,3,100);	//Add 'distance' task
 	SCH_Add_Task(putString,4,50);	//Add 'putString' task
-	SCH_Add_Task(upDownAwning,0,25);//Add 'updown' task
+	//SCH_Add_Task(upDownAwning,0,25);//Add 'updown' task
 	SCH_Start();					//Start running the scheduler 
 }
 
