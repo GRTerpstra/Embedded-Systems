@@ -5,6 +5,7 @@ from Controllers.MainController import SensorType
 from Views import GraphView
 import random
 import serial
+import json
 import time
 
 
@@ -14,7 +15,6 @@ class MainModel():
         self.frames = dict()
         self.currPage = PageType.LIGHT
         self.settings = GUISettings
-        self.data = dict()
         self.testCounter = 0;
 
         self.sensorTypes = [SensorType.DISTANCE, SensorType.LIGHT, SensorType.TEMPERATURE]
@@ -72,6 +72,8 @@ class MainModel():
         return
 
     def start(self):
+        self.running = True
+
         # show frames
         self.mainFrame.pack()
         self.closeFrame.pack()
@@ -79,8 +81,6 @@ class MainModel():
         # show frame
         self.mainRoot.after(10, self.update)
         self.mainRoot.mainloop()
-
-        self.running = True
 
     def stop(self):
         self.running = False
@@ -102,30 +102,9 @@ class MainModel():
 
         setting = self.settings.sensorSettings[str(self.currPage)]
 
-        self.addData(self.currPage, random.randint(setting.minValue, setting.maxValue))
-
         self.runTime += self.settings.updateTime
 
-        self.updateData(self.currType)
-        self.updateData(SensorType.DISTANCE)
-
-        self.read(self.currType)
-
-        # self.conn.write(str(0).encode())
-
-        # inf = ""
-        # data = self.conn.readline()
-
-        # for char in data:
-        # char = char.decode('ascii')
-        # print('char: ' + str(chr(char)))
-
-        # inf += str(char)
-
-        # print("The Arduino says:")
-        # print(inf)
-
-        # self.test = ((self.test + 1) % 2)
+        self.updateData()
 
         return
 
@@ -177,20 +156,11 @@ class MainModel():
 
         return
 
-    def addData(self, type, data):
-        if type is None:
-            return
-
-        if type in self.data.keys():
-            self.data[type].append(data)
-        else:
-            self.data[type] = [data]
-
     def getData(self, type):
-        if type is None or type not in self.data.keys():
+        if type is None or type not in self.sensorData.keys():
             return []
 
-        return self.data[type]
+        return self.sensorData[type]
 
     def reset(self):
         if self.conn is not None:
@@ -214,46 +184,104 @@ class MainModel():
 
         pass
 
-    def read(self, type):
-        if self.conn == None:
-            return None
+    def read(self):
+        data = []
 
-        data = None
+        if self.conn is not None:
+            if self.conn.inWaiting() > 0:
+                data = self.conn.readline().decode('ascii')
+                self.conn.flushInput()
 
-        if (self.conn.inWaiting() > 0):
-            data = self.conn.readline().decode('ascii')
-            self.conn.flushInput()
+                dataLength = len(data)
 
-            dataLength = len(data)
+                if data[dataLength-3] == "}" and data[0] == "{":
+                    counter = 1
+                    dataString = ""
+                    for letter in data:
+                        if(counter <= dataLength-2):
+                            dataString += letter
+                        counter+=1
 
-            if(data[dataLength-3] == "}" and data[0] == "{"):
-                counter = 1
-                dataString = ""
-                for letter in data:
-                    if(counter <= dataLength-2):
-                        dataString += letter
-                    counter+=1
-                data = dataString
-                print(data)
-            else:
-                print("Datalengte: " + str(dataLength))
-                print("FOUT: " + str(data[dataLength-3]) + "|" + str(data[0]))
+                    data = json.loads(dataString)
+                else:
+                    print("Datalengte: " + str(dataLength))
+                    print("FOUT: " + str(data[dataLength-3]) + "|" + str(data[0]))
 
         return data
 
-    def getSensorData(self, type):
-        if type is None or type not in self.sensorData.keys():
-            return 0
-
-        return self.sensorData[type]
-
     # updates the data of the sensor, based on the selected type
-    def updateData(self, sensorType):
-        if self.running is not True or sensorType is None:
+    def updateData(self):
+        if self.running is False:
             return
 
-        data = self.read(sensorType)
-        self.sensorData[sensorType] = data
+        data = self.read()
+
+        tVal = "0"
+        lVal = "0"
+        dVal = "0"
+
+        if 't' in data:
+            setting = self.getSetting(SensorType.TEMPERATURE)
+
+            if setting is not None:
+                if setting.minValue > int(data['t']):
+                    data['t'] = setting.minValue
+
+                if setting.maxValue < int(data['t']):
+                    data['t'] = setting.maxValue
+
+            tVal = str(data['t'])
+        elif 't' in self.sensorData.keys():
+            tVal = str(self.sensorData['t'][len(self.sensorData['t'])-1])
+
+        if str(SensorType.TEMPERATURE) in self.sensorData.keys():
+            self.sensorData[str(SensorType.TEMPERATURE)].append(tVal)
+        else:
+            self.sensorData[str(SensorType.TEMPERATURE)] = [tVal]
+
+        if 'l' in data:
+            setting = self.getSetting(SensorType.LIGHT)
+
+            if setting is not None:
+                if setting.minValue > int(data['l']):
+                    data['l'] = setting.minValue
+
+                if setting.maxValue < int(data['l']):
+                    data['l'] = setting.maxValue
+
+            lVal = str(data['l'])
+        elif 'l' in self.sensorData.keys():
+            lVal = str(self.sensorData['l'][len(self.sensorData['l']) - 1])
+
+        if str(SensorType.LIGHT) in self.sensorData.keys():
+            self.sensorData[str(SensorType.LIGHT)].append(lVal)
+        else:
+            self.sensorData[str(SensorType.LIGHT)] = [lVal]
+
+        if 'd' in data:
+            setting = self.getSetting(SensorType.DISTANCE)
+
+            if setting is not None:
+                if setting.minValue > int(data['d']):
+                    data['d'] = setting.minValue
+
+                if setting.maxValue < int(data['d']):
+                    data['d'] = setting.maxValue
+
+            dVal = str(data['d'])
+        elif 'd' in self.sensorData.keys():
+            dVal = str(self.sensorData['d'][len(self.sensorData['d']) - 1])
+
+        if str(SensorType.DISTANCE) in self.sensorData.keys():
+            self.sensorData[str(SensorType.DISTANCE)].append(dVal)
+        else:
+            self.sensorData[str(SensorType.DISTANCE)] = [dVal]
+
+    def getSetting(self, type):
+        if str(type) in GUISettings.sensorSettings.keys():
+            return GUISettings.sensorSettings[str(type)]
+
+        return None
 
     def updateType(self, type, data):
         if self.running is not True or type is None or type not in self.sensorSettings:

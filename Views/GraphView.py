@@ -90,7 +90,7 @@ class GraphView(View):
 
         width = (maxWidth / rows)
 
-        data = self.mainModel.getData(self.mainModel.currPage)[-(columns+1):]
+        data = self.mainModel.getData(str(self.mainModel.currPage))[-(columns+1):]
 
         for x in range(rows + 1):
             if self.mainModel.runTime <= (GUISettings.updateTime * rows):
@@ -126,13 +126,13 @@ class GraphView(View):
                                 text=titleY, anchor=E, tags="state")
 
         for i in range(len(data)-1):
-            old = data[i]
-            new = data[i+1]
+            old = int(data[i])
+            new = int(data[i+1])
 
             oldX = width * i
             newX = width * (i+1)
-            oldY = old/setting.maxValue * maxHeight
-            newY = new/setting.maxValue * maxHeight
+            oldY = maxHeight - old/setting.maxValue * maxHeight
+            newY = maxHeight - new/setting.maxValue * maxHeight
 
             self.canvas.create_line(offsetX + oldX, offsetY + oldY, offsetX + newX, offsetY + newY, width=2, fill="red", tags="temp")
 
