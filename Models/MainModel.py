@@ -28,6 +28,8 @@ class MainModel():
         self.currType = None
         self.runTime = 0
 
+        self.lastJson = None;
+
         # create main frame/canvas
         mainRoot = Tk()
         mainRoot.overrideredirect(True)
@@ -185,7 +187,11 @@ class MainModel():
         pass
 
     def read(self):
-        data = []
+
+        if self.lastJson is not None:
+            data = self.lastJson;
+        else:
+            data = []
 
         if self.conn is not None:
             if self.conn.inWaiting() > 0:
@@ -203,9 +209,9 @@ class MainModel():
                         counter+=1
 
                     data = json.loads(dataString)
+                    self.lastJson = data;
                 else:
-                    print("Datalengte: " + str(dataLength))
-                    print("FOUT: " + str(data[dataLength-3]) + "|" + str(data[0]))
+                    print("Invalid data")
 
         return data
 
@@ -231,6 +237,8 @@ class MainModel():
                     data['t'] = setting.maxValue
 
             tVal = str(data['t'])
+
+
         elif 't' in self.sensorData.keys():
             tVal = str(self.sensorData['t'][len(self.sensorData['t'])-1])
 
@@ -243,13 +251,14 @@ class MainModel():
             setting = self.getSetting(SensorType.LIGHT)
 
             if setting is not None:
-                if setting.minValue > int(data['l']):
+                if int(setting.minValue) > int(data['l']):
                     data['l'] = setting.minValue
 
                 if setting.maxValue < int(data['l']):
                     data['l'] = setting.maxValue
 
             lVal = str(data['l'])
+
         elif 'l' in self.sensorData.keys():
             lVal = str(self.sensorData['l'][len(self.sensorData['l']) - 1])
 

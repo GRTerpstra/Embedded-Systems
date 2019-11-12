@@ -3,31 +3,31 @@ Embedded_Systems.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000016  00800100  00000860  000008f4  2**0
+  0 .data         0000001c  00800100  00000860  000008f4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
   1 .text         00000860  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          0000003b  00800116  00800116  0000090a  2**0
+  2 .bss          0000003b  0080011c  0080011c  00000910  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  0000090a  2**0
+  3 .comment      00000030  00000000  00000000  00000910  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  0000093c  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000940  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000158  00000000  00000000  0000097c  2**0
+  5 .debug_aranges 00000158  00000000  00000000  00000980  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000163a  00000000  00000000  00000ad4  2**0
+  6 .debug_info   0000163a  00000000  00000000  00000ad8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000d18  00000000  00000000  0000210e  2**0
+  7 .debug_abbrev 00000d18  00000000  00000000  00002112  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000bdc  00000000  00000000  00002e26  2**0
+  8 .debug_line   00000ba6  00000000  00000000  00002e2a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000002a0  00000000  00000000  00003a04  2**2
+  9 .debug_frame  000002a0  00000000  00000000  000039d0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000696  00000000  00000000  00003ca4  2**0
+ 10 .debug_str    000006a3  00000000  00000000  00003c70  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000714  00000000  00000000  0000433a  2**0
+ 11 .debug_loc    00000714  00000000  00000000  00004313  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000f8  00000000  00000000  00004a4e  2**0
+ 12 .debug_ranges 000000f8  00000000  00000000  00004a27  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -77,13 +77,13 @@ Disassembly of section .text:
   7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
   80:	05 90       	lpm	r0, Z+
   82:	0d 92       	st	X+, r0
-  84:	a6 31       	cpi	r26, 0x16	; 22
+  84:	ac 31       	cpi	r26, 0x1C	; 28
   86:	b1 07       	cpc	r27, r17
   88:	d9 f7       	brne	.-10     	; 0x80 <__do_copy_data+0xc>
 
 0000008a <__do_clear_bss>:
   8a:	21 e0       	ldi	r18, 0x01	; 1
-  8c:	a6 e1       	ldi	r26, 0x16	; 22
+  8c:	ac e1       	ldi	r26, 0x1C	; 28
   8e:	b1 e0       	ldi	r27, 0x01	; 1
   90:	01 c0       	rjmp	.+2      	; 0x94 <.do_clear_bss_start>
 
@@ -91,7 +91,7 @@ Disassembly of section .text:
   92:	1d 92       	st	X+, r1
 
 00000094 <.do_clear_bss_start>:
-  94:	a1 35       	cpi	r26, 0x51	; 81
+  94:	a7 35       	cpi	r26, 0x57	; 87
   96:	b2 07       	cpc	r27, r18
   98:	e1 f7       	brne	.-8      	; 0x92 <.do_clear_bss_loop>
   9a:	0e 94 6a 01 	call	0x2d4	; 0x2d4 <main>
@@ -116,11 +116,11 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
 
    // First find a gap in the array (if there is one)
    while((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
-  b0:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <__data_end>
-  b4:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <__data_end+0x1>
+  b0:	80 91 1c 01 	lds	r24, 0x011C	; 0x80011c <__data_end>
+  b4:	90 91 1d 01 	lds	r25, 0x011D	; 0x80011d <__data_end+0x1>
   b8:	89 2b       	or	r24, r25
   ba:	81 f0       	breq	.+32     	; 0xdc <SCH_Add_Task+0x36>
-  bc:	e6 e1       	ldi	r30, 0x16	; 22
+  bc:	ec e1       	ldi	r30, 0x1C	; 28
   be:	f1 e0       	ldi	r31, 0x01	; 1
   c0:	21 e0       	ldi	r18, 0x01	; 1
   c2:	30 e0       	ldi	r19, 0x00	; 0
@@ -180,7 +180,7 @@ unsigned char SCH_Add_Task(void (*pFunction)(), const unsigned int DELAY, const 
   ee:	ff 1f       	adc	r31, r31
   f0:	ec 1b       	sub	r30, r28
   f2:	fd 0b       	sbc	r31, r29
-  f4:	ea 5e       	subi	r30, 0xEA	; 234
+  f4:	e4 5e       	subi	r30, 0xE4	; 228
   f6:	fe 4f       	sbci	r31, 0xFE	; 254
   f8:	11 83       	std	Z+1, r17	; 0x01
   fa:	00 83       	st	Z, r16
@@ -214,7 +214,7 @@ unsigned char SCH_Delete_Task(const unsigned char TASK_INDEX)
  114:	c0 01       	movw	r24, r0
  116:	11 24       	eor	r1, r1
  118:	fc 01       	movw	r30, r24
- 11a:	ea 5e       	subi	r30, 0xEA	; 234
+ 11a:	e4 5e       	subi	r30, 0xE4	; 228
  11c:	fe 4f       	sbci	r31, 0xFE	; 254
  11e:	11 82       	std	Z+1, r1	; 0x01
  120:	10 82       	st	Z, r1
@@ -244,7 +244,7 @@ void SCH_Dispatch_Tasks(void)
  134:	1f 93       	push	r17
  136:	cf 93       	push	r28
  138:	df 93       	push	r29
- 13a:	c6 e1       	ldi	r28, 0x16	; 22
+ 13a:	cc e1       	ldi	r28, 0x1C	; 28
  13c:	d1 e0       	ldi	r29, 0x01	; 1
    unsigned char Index;
 
@@ -377,9 +377,9 @@ ISR(TIMER1_COMPA_vect)
  1bc:	bf 93       	push	r27
  1be:	ef 93       	push	r30
  1c0:	ff 93       	push	r31
- 1c2:	e6 e1       	ldi	r30, 0x16	; 22
+ 1c2:	ec e1       	ldi	r30, 0x1C	; 28
  1c4:	f1 e0       	ldi	r31, 0x01	; 1
- 1c6:	29 e3       	ldi	r18, 0x39	; 57
+ 1c6:	2f e3       	ldi	r18, 0x3F	; 63
  1c8:	31 e0       	ldi	r19, 0x01	; 1
    unsigned char Index;
    for(Index = 0; Index < SCH_MAX_TASKS; Index++)
@@ -629,7 +629,7 @@ void putString(){
  2de:	cf 93       	push	r28
  2e0:	df 93       	push	r29
 	
-	USART_putstring("{t:");
+	USART_putstring("{\"t\":");
  2e2:	86 e0       	ldi	r24, 0x06	; 6
  2e4:	91 e0       	ldi	r25, 0x01	; 1
  2e6:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
@@ -639,16 +639,16 @@ void putString(){
  2ee:	88 81       	ld	r24, Y
  2f0:	99 81       	ldd	r25, Y+1	; 0x01
  2f2:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
-	USART_putstring(",l:");
- 2f6:	8a e0       	ldi	r24, 0x0A	; 10
+	USART_putstring(",\"l\":");
+ 2f6:	8c e0       	ldi	r24, 0x0C	; 12
  2f8:	91 e0       	ldi	r25, 0x01	; 1
  2fa:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
 	USART_putstring(values[1]);
  2fe:	8a 81       	ldd	r24, Y+2	; 0x02
  300:	9b 81       	ldd	r25, Y+3	; 0x03
  302:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
-	USART_putstring(",d:");
- 306:	8e e0       	ldi	r24, 0x0E	; 14
+	USART_putstring(",\"d\":");
+ 306:	82 e1       	ldi	r24, 0x12	; 18
  308:	91 e0       	ldi	r25, 0x01	; 1
  30a:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
 	USART_putstring(values[2]);
@@ -656,7 +656,7 @@ void putString(){
  310:	9d 81       	ldd	r25, Y+5	; 0x05
  312:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
 	USART_putstring("}");
- 316:	82 e1       	ldi	r24, 0x12	; 18
+ 316:	88 e1       	ldi	r24, 0x18	; 24
  318:	91 e0       	ldi	r25, 0x01	; 1
  31a:	0e 94 30 02 	call	0x460	; 0x460 <USART_putstring>
 	
@@ -702,8 +702,8 @@ void temperature()
  368:	0e 94 cf 02 	call	0x59e	; 0x59e <__fixunssfsi>
  36c:	dc 01       	movw	r26, r24
  36e:	cb 01       	movw	r24, r22
- 370:	90 93 3a 01 	sts	0x013A, r25	; 0x80013a <analog_value+0x1>
- 374:	80 93 39 01 	sts	0x0139, r24	; 0x800139 <analog_value>
+ 370:	90 93 40 01 	sts	0x0140, r25	; 0x800140 <analog_value+0x1>
+ 374:	80 93 3f 01 	sts	0x013F, r24	; 0x80013f <analog_value>
     } else if (__radix < 2 || __radix > 36) {
 	*__s = 0;
 	return __s;
@@ -711,12 +711,12 @@ void temperature()
 	extern char *__itoa_ncheck (int, char *, unsigned char);
 	return __itoa_ncheck (__val, __s, __radix);
  378:	4a e0       	ldi	r20, 0x0A	; 10
- 37a:	60 e4       	ldi	r22, 0x40	; 64
+ 37a:	66 e4       	ldi	r22, 0x46	; 70
  37c:	71 e0       	ldi	r23, 0x01	; 1
  37e:	0e 94 f9 03 	call	0x7f2	; 0x7f2 <__itoa_ncheck>
 	itoa(analog_value, temperature_sensor, 10);								//  Convert the read value to an ascii string
 	values[0] = temperature_sensor;
- 382:	80 e4       	ldi	r24, 0x40	; 64
+ 382:	86 e4       	ldi	r24, 0x46	; 70
  384:	91 e0       	ldi	r25, 0x01	; 1
  386:	90 93 01 01 	sts	0x0101, r25	; 0x800101 <__data_start+0x1>
  38a:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__data_start>
@@ -753,15 +753,15 @@ void light()
  3c4:	0e 94 cf 02 	call	0x59e	; 0x59e <__fixunssfsi>
  3c8:	dc 01       	movw	r26, r24
  3ca:	cb 01       	movw	r24, r22
- 3cc:	90 93 3a 01 	sts	0x013A, r25	; 0x80013a <analog_value+0x1>
- 3d0:	80 93 39 01 	sts	0x0139, r24	; 0x800139 <analog_value>
+ 3cc:	90 93 40 01 	sts	0x0140, r25	; 0x800140 <analog_value+0x1>
+ 3d0:	80 93 3f 01 	sts	0x013F, r24	; 0x80013f <analog_value>
  3d4:	4a e0       	ldi	r20, 0x0A	; 10
- 3d6:	6b e3       	ldi	r22, 0x3B	; 59
+ 3d6:	61 e4       	ldi	r22, 0x41	; 65
  3d8:	71 e0       	ldi	r23, 0x01	; 1
  3da:	0e 94 f9 03 	call	0x7f2	; 0x7f2 <__itoa_ncheck>
 	itoa(analog_value, light_sensor, 10);							  // Convert the read value to an ascii string
 	values[1] = light_sensor;											// Send value to the terminal
- 3de:	8b e3       	ldi	r24, 0x3B	; 59
+ 3de:	81 e4       	ldi	r24, 0x41	; 65
  3e0:	91 e0       	ldi	r25, 0x01	; 1
  3e2:	90 93 03 01 	sts	0x0103, r25	; 0x800103 <__data_start+0x3>
  3e6:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <__data_start+0x2>
@@ -816,14 +816,14 @@ void distance()
  434:	dc 01       	movw	r26, r24
  436:	cb 01       	movw	r24, r22
  438:	4a e0       	ldi	r20, 0x0A	; 10
- 43a:	67 e4       	ldi	r22, 0x47	; 71
+ 43a:	6d e4       	ldi	r22, 0x4D	; 77
  43c:	71 e0       	ldi	r23, 0x01	; 1
  43e:	0e 94 f9 03 	call	0x7f2	; 0x7f2 <__itoa_ncheck>
 	float distance = ((float)count / 4);		// Calculate the distance
 
 	itoa(distance, distance_sensor, 10);        // Convert the read value to an ascii string
 	values[2] = distance_sensor;
- 442:	87 e4       	ldi	r24, 0x47	; 71
+ 442:	8d e4       	ldi	r24, 0x4D	; 77
  444:	91 e0       	ldi	r25, 0x01	; 1
  446:	90 93 05 01 	sts	0x0105, r25	; 0x800105 <__data_start+0x5>
  44a:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <__data_start+0x4>
