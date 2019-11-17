@@ -1,6 +1,5 @@
 import serial
 from enum import Enum
-import SensorSetting
 
 class MainController:
     def __init__(self, mainModel):

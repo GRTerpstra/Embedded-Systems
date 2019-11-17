@@ -1,5 +1,4 @@
 from enum import Enum
-
 class MenuModel:
     def __init__(self, mainModel):
         self.mainModel = mainModel
@@ -10,13 +9,8 @@ class MenuModel:
 
         return
 
-    def switchPage(self, type):
-        self.mainModel.currPage = type
-        self.mainModel.updateViews()
-
-        return
-
 class PageType(Enum):
+    #HOME = "HOME"
     LIGHT = "LIGHT SENSOR"
     TEMPERATURE = "TEMPERATURE SENSOR"
 

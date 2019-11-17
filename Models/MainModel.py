@@ -2,25 +2,22 @@ from tkinter import *
 from enum import Enum
 from GUISettings import GUISettings
 from Controllers.MainController import SensorType
-from Views import GraphView
+from Views import GraphView, PageView
 import random
 import serial
 import json
 import time
-
 
 class MainModel():
     def __init__(self):
         self.views = dict()
         self.frames = dict()
         self.currPage = PageType.LIGHT
-        self.settings = GUISettings
         self.testCounter = 0;
 
         self.sensorTypes = [SensorType.DISTANCE, SensorType.LIGHT, SensorType.TEMPERATURE]
         self.switchTypes = [SensorType.LIGHT, SensorType.TEMPERATURE]
         self.sensorData = dict()
-        self.sensorSettings = []
 
         self.conn = None
         self.manual = False
@@ -50,18 +47,18 @@ class MainModel():
         self.screenHeight = mainRoot.winfo_screenheight()
 
         # Gets both half the screen width/height and window width/height
-        centerX = int(self.screenWidth / 2 - self.settings.mainWidth / 2)
-        centerY = int(self.screenHeight / 2 - self.settings.mainHeight / 2)
+        centerX = int(self.screenWidth / 2 - GUISettings.mainWidth / 2)
+        centerY = int(self.screenHeight / 2 - GUISettings.mainHeight / 2)
 
         # set start position and margin
-        mainRoot.geometry('{}x{}+{}+{}'.format(self.settings.mainWidth, self.settings.mainHeight, centerX, centerY))
-        backRoot.geometry('{}x{}+{}+{}'.format(self.settings.closeWidth, self.settings.closeHeight,
-                                               centerX + self.settings.mainWidth - int(self.settings.closeWidth / 2),
-                                               centerY - int(self.settings.closeHeight / 2)))
+        mainRoot.geometry('{}x{}+{}+{}'.format(GUISettings.mainWidth, GUISettings.mainHeight, centerX, centerY))
+        backRoot.geometry('{}x{}+{}+{}'.format(GUISettings.closeWidth, GUISettings.closeHeight,
+                                               centerX + GUISettings.mainWidth - int(GUISettings.closeWidth / 2),
+                                               centerY - int(GUISettings.closeHeight / 2)))
 
-        mainFrame = Frame(mainRoot, width=self.settings.mainWidth, height=self.settings.mainHeight,
-                          bg=self.settings.mainBgColor)
-        closeFrame = Frame(backRoot, width=self.settings.closeWidth, height=self.settings.closeHeight)
+        mainFrame = Frame(mainRoot, width=GUISettings.mainWidth, height=GUISettings.mainHeight,
+                          bg=GUISettings.mainBgColor)
+        closeFrame = Frame(backRoot, width=GUISettings.closeWidth, height=GUISettings.closeHeight)
 
         self.mainRoot = mainRoot
         self.bgRoot = bgRoot
@@ -98,13 +95,17 @@ class MainModel():
         self.updateType(SensorType.DISTANCE)
 
     def update(self):
-        self.updateViews(False)
         self.updateView(GraphView.GraphView)
-        self.mainRoot.after(self.settings.updateTime, self.update)
+        self.updateViews(False)
+        self.mainRoot.after(GUISettings.updateTime, self.update)
 
-        setting = self.settings.sensorSettings[str(self.currPage)]
+        pageType = str(self.currPage)
+        setting = None
 
-        self.runTime += self.settings.updateTime
+        if pageType in GUISettings.Settings:
+            setting = GUISettings.Settings[pageType]
+
+        self.runTime += GUISettings.updateTime
 
         self.updateData()
 
@@ -135,12 +136,13 @@ class MainModel():
                     continue
 
             if override or view.updateNeeded:
-                frame = view.getCanvas(False)
-                frame.pack()
+                if view.show:
+                    frame = view.getCanvas(False)
+                    frame.pack_propagate(0)
 
-                frame.place(x=view.offsetX, y=view.offsetY)
+                    frame.place(x=view.offsetX, y=view.offsetY)
 
-                self.frames[view] = frame
+                    self.frames[view] = frame
 
                 view.update()
 
@@ -172,11 +174,14 @@ class MainModel():
         self.sensorData = dict()
 
         # reset sensor settings:
-        self.sensorSettings = GUISettings.sensorSettings
+        for type in self.switchTypes:
+            tabSettings = GUISettings.tabSettings
 
-        for type in self.sensorSettings:
-            setting = self.sensorSettings[type]
-            self.updateType(type, setting.currValue)
+            for tabSetting in tabSettings:
+                if tabSetting in GUISettings.Settings.keys():
+                    setting = GUISettings.Settings[tabSetting]
+                    self.updateSetting(type, setting)
+
 
     def write(self, byte):
         if self.conn == None:
@@ -187,7 +192,6 @@ class MainModel():
         pass
 
     def read(self):
-
         if self.lastJson is not None:
             data = self.lastJson;
         else:
@@ -212,6 +216,7 @@ class MainModel():
                     self.lastJson = data;
                 else:
                     print("Invalid data")
+                    return []
 
         return data
 
@@ -287,25 +292,71 @@ class MainModel():
             self.sensorData[str(SensorType.DISTANCE)] = [dVal]
 
     def getSetting(self, type):
-        if str(type) in GUISettings.sensorSettings.keys():
-            return GUISettings.sensorSettings[str(type)]
+        if str(type) in GUISettings.Settings.keys():
+            return GUISettings.Settings[str(type)]
 
         return None
 
-    def updateType(self, type, data):
-        if self.running is not True or type is None or type not in self.sensorSettings:
+    def updateSetting(self, key, value, save = True):
+        if key is None or key not in GUISettings.Settings.keys():
             return
 
-        setting = self.sensorSettings[type]
-        setting.currValue = data
+        setting = GUISettings.Settings[key]
 
-        self.write(str(data))
+        #todo: update setting in arduino by writing it
+        #self.write(str(data))
 
-        pass
+        if save == True:
+            pass
+
+        return
+
+    def resetSetting(self, key, save = True):
+        if key is None or key not in GUISettings.Settings.keys():
+            return
+
+        setting = GUISettings.Settings[key]
+        setting.reset()
+
+        # todo: update setting in arduino by writing it
+        # self.write(str(data))
+
+        if save == True:
+            pass
+
+        return
+
+    def updateStat(self, key, add):
+        if key is None or key not in GUISettings.Stats.keys():
+            return
+
+        stat = GUISettings.Stats[key]
+        stat.setValue(stat.currValue + add)
+
+        return
+
+    def resetStat(self, key):
+        if key is None or key not in GUISettings.Stats.keys():
+            return
+
+        stat = GUISettings.Stats[key]
+        stat.reset()
+
+        return
+
+    def switchPage(self, type):
+        if self.currPage == type:
+            return
+
+        self.updateView(PageView)
+        self.currPage = type
+        self.updateViews()
+
+        return
 
 
 class PageType(Enum):
-    HOME = 0
+    #HOME = 0
     LIGHT = 1
     TEMPERATURE = 2
 

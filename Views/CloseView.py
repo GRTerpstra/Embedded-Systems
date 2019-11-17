@@ -30,7 +30,7 @@ class CloseView(View):
     def getScreen(self):
         canvas = Canvas(self.mainModel.backRoot, height=self.height, width=self.width, highlightthickness=0, bd=0)
 
-        closebtn = Button(canvas, text='X', relief="flat", width=self.width - self.borderWidth*2, height=self.height - self.borderHeight*2, bg=self.bgColor, fg="orange", activebackground=self.bgColor, borderwidth=self.borderWidth, highlightthickness=5, highlightbackground="purple", justify=LEFT, command=lambda : self.mainModel.close())
+        closebtn = Button(canvas, text='X', relief="flat", width=self.width - self.borderWidth*2, height=self.height - self.borderHeight*2, bd=0, bg=self.bgColor, fg="white", activeforeground="white", activebackground=self.bgColor, borderwidth=self.borderWidth, highlightthickness=5, font=GUISettings.closeFont, highlightbackground="purple", justify=LEFT, command=lambda : self.mainModel.close())
         closebtn.pack(side='left')
 
         self.drawFrame(canvas, 0, 0, self.height, self.width, self.bgColor, self.borderColor, self.borderWidth, self.borderHeight, self.shadowColor, self.shadowWidth, self.shadowHeight)

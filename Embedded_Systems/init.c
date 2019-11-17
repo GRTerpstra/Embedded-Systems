@@ -37,7 +37,7 @@ void init_ttc_scheduler()
 	SCH_Add_Task(light,2,100);		//Add 'light' task
 	SCH_Add_Task(distance,3,100);	//Add 'distance' task
 	SCH_Add_Task(putString,4,50);	//Add 'putString' task
-	//SCH_Add_Task(upDownAwning,0,25);//Add 'updown' task
+	SCH_Add_Task(upDownAwning,0,25);//Add 'updown' task
 	SCH_Start();					//Start running the scheduler 
 }
 
