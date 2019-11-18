@@ -31,13 +31,29 @@ int light_awning_down = 60;							// Level of light at which the awning closes
 int light_awning_up = 16;							// Level of light at which the awning opens
 int distance_awning_up = 40;						// Distance at which the awning opens
 int distance_awning_down = 5;						// Distance at which the awning closes
-int manual_awning_distance = 0;						// Manual set distance where awning closes
+int manual_awning = 0;						// Manual set distance where awning closes
 
-int manualMode = 0;									// If system is in manual mode
+int manualMode = 1;									// If system is in manual mode
 
 
 void upDownAwning()
 {
+	if(manualMode){
+		
+		if(manual_awning){ //Awning rolled out
+			
+			PORTB &= ~(1 << PB5); //Green off
+			PORTB |= (1 << PB3); //Red on
+			
+		}else{ //Awning rolled in
+			
+			PORTB &= ~(1 << PB3); //Red off
+			PORTB |= (1 << PB5); //Green on
+			
+		}
+		
+		return;
+	}
 	int sensor_light = atoi(light_sensor);					// Convert light sensor value to int and set ls
 	int sensor_temperature = atoi(temperature_sensor);				// Convert temperature sensor value to int and set ts
 	distanceStill();								// Get distance
@@ -75,19 +91,6 @@ void upDownAwning()
 	
 }
 
-int unsigned combine(unsigned x, unsigned y)
-{
-	unsigned pow = 10;
-	return (y * pow) + x;
-}
-
-int unsigned combine3(unsigned x, unsigned y, unsigned z)
-{
-	unsigned pow1 = 10;
-	unsigned pow2 = 100;
-	return (z * pow2) + (y * pow1) + x;
-}
-
 ISR ( USART_RX_vect )
 {
 	unsigned char ReceivedByte;
@@ -97,34 +100,20 @@ ISR ( USART_RX_vect )
 	{
 		case '1':								// 1 = Shut the sunshade // Red
 		manualMode = 1;
-		manual_awning_distance = 0;
+		manual_awning= 0;
 		return;
 		
 		case '2':								// 2 = Open the sunshade // Green
 		manualMode = 1;
-		manual_awning_distance = 1;
+		manual_awning = 1;
 		return;
 		
-		case '3':								// 3 = set
+		case '3':								// 3 = Manual mode off
 		manualMode = 0;
-		temperature_awning_down = combine((int) USART_receive(), (int) USART_receive());
-		temperature_awning_up = combine((int) USART_receive(), (int) USART_receive());
-		light_awning_down = combine((int) USART_receive(), (int) USART_receive());
-		light_awning_up = combine((int) USART_receive(), (int) USART_receive());
 		return;
 		
-		case '7':								// 7 = open/closing distance
+		case '4':								// 4 = Manual mode on
 		manualMode = 1;
-		int closeopen = combine3((int) USART_receive(), (int) USART_receive(), (int) USART_receive());
-		distance_awning_up = closeopen;
-		return;
-		
-		case '8':								// 8 = set manual ON / OFF
-		manualMode = (int) USART_receive();		// 1/0
-		if (manualMode == 1)					// manual mode on
-		{
-			manual_awning_distance = (int)atoi(distance_sensor);
-		}
 		return;
 		
 		default:

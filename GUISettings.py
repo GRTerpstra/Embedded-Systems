@@ -121,5 +121,5 @@ class GUISettings:
         "tempTime": GUISetting("tempTime", "section time", 0, 100, 30),
 
         "manualMode": GUISetting("manualMode", "manual mode", 0, 1, 0),
-        "manualState": GUISetting("manual", "manual state", 0, 1, 1)
+        "manualState": GUISetting("manualState", "Rolled out", 0, 1, 0)
     }

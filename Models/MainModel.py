@@ -13,7 +13,6 @@ class MainModel():
         self.views = dict()
         self.frames = dict()
         self.currPage = PageType.LIGHT
-        self.testCounter = 0;
 
         self.sensorTypes = [SensorType.DISTANCE, SensorType.LIGHT, SensorType.TEMPERATURE]
         self.switchTypes = [SensorType.LIGHT, SensorType.TEMPERATURE]
@@ -25,7 +24,9 @@ class MainModel():
         self.currType = None
         self.runTime = 0
 
-        self.lastJson = None;
+        self.awningStatus = 0
+        self.manualMode = 0
+        self.lastJson = None
 
         # create main frame/canvas
         mainRoot = Tk()
@@ -183,13 +184,35 @@ class MainModel():
                     self.updateSetting(type, setting)
 
 
-    def write(self, byte):
-        if self.conn == None:
-            return
+    def write(self, instruction, value=None):
+        self.conn.write(str(instruction).encode())
+        print("Writing " + str(instruction) + " to arduino")
+        if value is not None:
+            for num in range(len(value)):
+                int_val = [int(d) for d in value[num]]
 
-        self.conn.write(byte.encode('ascii'))
+                [int_val.insert(0, 0) for x in range(2 - len(int_val)) if instruction == 3]
+                [int_val.insert(0, 0) for x in range(3-len(int_val)) if instruction == 7]
 
-        pass
+                for d in int_val:
+                    self.conn.write(str(d).encode())
+
+    def toggleAwning(self):
+        if(self.awningStatus):
+            self.write(1)
+            self.awningStatus = 0
+        else:
+            self.write(2)
+            self.awningStatus = 1
+
+    def toggleManual(self):
+        if(self.manualMode):
+            self.write(3)
+            self.manualMode = 0
+        else:
+            self.write(4)
+            self.manualMode = 1
+
 
     def read(self):
         if self.lastJson is not None:
@@ -215,7 +238,10 @@ class MainModel():
                     data = json.loads(dataString)
                     self.lastJson = data;
                 else:
-                    print("Invalid data")
+                    print("Invalid data: ")
+                    print(data)
+                    if self.lastJson is not None:
+                        return self.lastJson;
                     return []
 
         return data
@@ -319,8 +345,6 @@ class MainModel():
 
         setting.updateValue()
 
-        #todo: update setting in arduino by writing it
-        #self.write(str(data))
 
         if save == True:
             pass
@@ -343,6 +367,13 @@ class MainModel():
         return
 
     def updateToggle(self, key, value):
+        if(key == "manualState"):
+            if(self.manualMode == 0):
+                return
+            else:
+                self.toggleAwning()
+        if(key == "manualMode"):
+            self.toggleManual()
         self.updateSetting(key, True, value)
         self.updateView(PageView)
         self.updateViews()

@@ -28,6 +28,7 @@ void init_USART()
 	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
 	/* Set frame format: 8data, 1stop bit */
 	UCSR0C = (1<<UCSZ01) |(1<<UCSZ00);
+	UCSR0B |= (1 << RXCIE0 );
 }
 
 void init_ttc_scheduler()
