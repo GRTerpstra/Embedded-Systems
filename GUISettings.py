@@ -46,8 +46,22 @@ class GUISettings:
     tabTitleColor = "white"
     tabLabelPaddingY = 11
     tabLabelFont = ("Times New Roman", 15, 'bold')
-    settingHeight = 100
+    settingHeight = 42
+    setTitleHeight=22
+    setTitleFont = ("Times New Roman", 9, 'bold')
+    setBarColor = "#444953"
+    setBarBorder = 1
     setLabelMarginX = 5
+    setLabelHeight = 22
+    setLabelWidth=32
+    setLabelBgColor="black"
+    btnBgColor = "#2ba1d1"
+    btnBorderColor = "#203d55"
+    btnBorderWidth = 1
+    btnBorderHeight = 1
+    btnHeight = 32
+    btnWidth = 95
+    btnFont = ("Times New Roman", 12, 'bold')
     closeWidth = 22
     closeHeight = 22
     closeBorderWidth = 1
@@ -60,6 +74,15 @@ class GUISettings:
     closeFont = ("Times New Roman", 10, 'bold')
     updateTime = 1000
     connPort = 9600
+    toggleOffColor = "red"
+    toggleOnColor = "green"
+    toggleWidth = 96
+    toggleHeight = 70
+    toggleSwitchWidth = 84
+    toggleSwitchHeight = 36
+    toggleColor="#444953"
+    toggleFont=("Times New Roman", 10, 'bold')
+    toggleBorderColor="black"
 
     colorOne = "#8ab71b"
     colorTwo = "#2aa3d6"
@@ -86,14 +109,17 @@ class GUISettings:
     }
 
     Settings = {
-        str(SensorType.DISTANCE): GUISetting(str(SensorType.DISTANCE), 0, 100, 50),
-        str(SensorType.LIGHT): GUISetting(str(SensorType.LIGHT), 0, 100, 30),
-        str(SensorType.TEMPERATURE): GUISetting(str(SensorType.TEMPERATURE), 0, 50, 40),
+        str(SensorType.DISTANCE): GUISetting(str(SensorType.DISTANCE), str(SensorType.DISTANCE), 0, 100, 50),
+        str(SensorType.LIGHT): GUISetting(str(SensorType.LIGHT), str(SensorType.LIGHT), 0, 100, 30),
+        str(SensorType.TEMPERATURE): GUISetting(str(SensorType.TEMPERATURE), str(SensorType.TEMPERATURE), 0, 50, 40),
 
-        "lightTarget": GUISetting("target light", 0, 100, 50),
-        "lightDistance": GUISetting("target distance", 0, 100, 50),
-        "lightTime": GUISetting("section time", 0, 100, 30),
-        "tempTarget": GUISetting("target temperature", 0, 100, 50),
-        "tempDistance": GUISetting("target distance", 0, 100, 50),
-        "tempTime": GUISetting("section time", 0, 100, 30),
+        "lightTarget": GUISetting("lightTarget", "target light", 0, 100, 50),
+        "lightDistance": GUISetting("lightDistance", "target distance", 0, 100, 50),
+        "lightTime": GUISetting("lightTime", "section time", 0, 100, 30),
+        "tempTarget": GUISetting("tempTarget", "target temperature", 0, 100, 50),
+        "tempDistance": GUISetting("tempDistance", "target distance", 0, 100, 50),
+        "tempTime": GUISetting("tempTime", "section time", 0, 100, 30),
+
+        "manualMode": GUISetting("manualMode", "manual mode", 0, 1, 0),
+        "manualState": GUISetting("manual", "manual state", 0, 1, 1)
     }

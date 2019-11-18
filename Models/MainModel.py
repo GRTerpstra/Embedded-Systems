@@ -297,11 +297,27 @@ class MainModel():
 
         return None
 
-    def updateSetting(self, key, value, save = True):
+    def updateSet(self, key, label, value):
         if key is None or key not in GUISettings.Settings.keys():
             return
 
         setting = GUISettings.Settings[key]
+        setting.setValue(int(value), False)
+
+        label.configure(text=str(setting.tempValue))
+
+        return
+
+    def updateSetting(self, key, save = True, value = None):
+        if key is None or key not in GUISettings.Settings.keys():
+            return
+
+        setting = GUISettings.Settings[key]
+
+        if value is not None:
+            setting.setValue(value, save)
+
+        setting.updateValue()
 
         #todo: update setting in arduino by writing it
         #self.write(str(data))
@@ -323,6 +339,39 @@ class MainModel():
 
         if save == True:
             pass
+
+        return
+
+    def updateToggle(self, key, value):
+        self.updateSetting(key, True, value)
+        self.updateView(PageView)
+        self.updateViews()
+
+    def resetSettings(self, type):
+        if type is None or type not in GUISettings.tabSettings.keys():
+            return
+
+        settings = GUISettings.tabSettings[type]
+
+        for key in settings:
+            self.resetSetting(key, False)
+
+        self.updateView(PageView)
+        self.updateViews()
+
+        return
+
+    def saveSettings(self, type):
+        if type is None or type not in GUISettings.tabSettings.keys():
+            return
+
+        settings = GUISettings.tabSettings[type]
+
+        for key in settings:
+            self.updateSetting(key, True)
+
+        self.updateView(PageView)
+        self.updateViews()
 
         return
 
@@ -356,9 +405,8 @@ class MainModel():
 
 
 class PageType(Enum):
-    #HOME = 0
-    LIGHT = 1
-    TEMPERATURE = 2
+    LIGHT = 0
+    TEMPERATURE = 1
 
     def __str__(self):
         return str(self.name)

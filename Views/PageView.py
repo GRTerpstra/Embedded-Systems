@@ -88,6 +88,15 @@ class PageView(View):
                 self.drawSetting(canvas, offsetX, offsetY, setWidth, setHeight, setting)
                 offsetY += (GUISettings.mainMargin + setHeight)
 
+        self.drawToggle(canvas, 0, offsetY, "manualMode")
+        self.drawToggle(canvas, GUISettings.mainMargin + GUISettings.toggleWidth, offsetY, "manualState")
+
+        offsetX = 0
+        offsetY = self.height - GUISettings.btnHeight - GUISettings.mainMargin
+
+        self.drawButton(canvas, self.width - GUISettings.btnWidth - GUISettings.mainMargin, self.height - GUISettings.btnHeight - GUISettings.mainMargin, GUISettings.btnWidth, GUISettings.btnHeight, "SAVE", self.mainModel.saveSettings, [pageType])
+        self.drawButton(canvas, self.width - (GUISettings.btnWidth + GUISettings.mainMargin)*2, self.height - GUISettings.btnHeight - GUISettings.mainMargin, GUISettings.btnWidth, GUISettings.btnHeight, "RESET", self.mainModel.resetSettings, [pageType])
+
         self.canvas = canvas
 
         return canvas
